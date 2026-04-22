@@ -407,45 +407,7 @@ select.field-input{appearance:auto;cursor:pointer;}
 // ── CONFIGURAÇÃO ──────────────────────────────────────────────
 var POWER_AUTOMATE_URL = "https://default6e7940e432a14c7fb9bd40b5b810bc.12.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8fc5989f7a104796a3537296646d65fd/triggers/manual/paths/invoke?api-version=1";
 
-var msalInstance = null;
-var loginRequest = { scopes: ["https://service.flow.microsoft.com//.default"] };
 
-async function initMsal() {
-  if (msalInstance) return;
-  var { PublicClientApplication } = await import("https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.esm.min.js");
-  var msalConfig = {
-    auth: {
-      clientId: "d3590ed6-52b3-4102-aeff-aad2292ab01c",
-      authority: "https://login.microsoftonline.com/common",
-      redirectUri: window.location.href.split("?")[0]
-    },
-    cache: { cacheLocation: "sessionStorage" }
-  };
-  msalInstance = new PublicClientApplication(msalConfig);
-  await msalInstance.initialize();
-}
-
-async function getToken() {
-  await initMsal();
-  var accounts = msalInstance.getAllAccounts();
-  if (accounts.length === 0) {
-    await msalInstance.loginPopup(loginRequest);
-    accounts = msalInstance.getAllAccounts();
-  }
-  try {
-    var tokenResp = await msalInstance.acquireTokenSilent({
-      ...loginRequest,
-      account: accounts[0]
-    });
-    return tokenResp.accessToken;
-  } catch(e) {
-    var tokenResp = await msalInstance.acquireTokenPopup({
-      ...loginRequest,
-      account: accounts[0]
-    });
-    return tokenResp.accessToken;
-  }
-}
 
 // ── ID DO PROCESSO ────────────────────────────────────────────
 var idProcesso = "";
@@ -640,13 +602,9 @@ async function confirmarEnvio() {
   };
 
   try {
-    var token = await getToken();
     var resp = await fetch(POWER_AUTOMATE_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(payload)
     });
     if (resp.ok) {
