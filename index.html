@@ -405,7 +405,7 @@ select.field-input{appearance:auto;cursor:pointer;}
 
 <script>
 // ── CONFIGURAÇÃO ──────────────────────────────────────────────
-var POWER_AUTOMATE_URL = "https://default6e7940e432a14c7fb9bd40b5b810bc.12.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8fc5989f7a104796a3537296646d65fd/triggers/manual/paths/invoke?api-version=1";
+
 
 
 
@@ -550,10 +550,10 @@ async function confirmarEnvio() {
   fecharModal();
   var btn = document.getElementById("btnEnviar");
   btn.disabled = true;
-  btn.innerHTML = "<span class='spinner'></span>Enviando...";
+  btn.innerHTML = "<span class='spinner'></span>Preparando...";
 
-  // Montar despesas
-  var despesas = [];
+  // Montar string de despesas
+  var despesasStr = "";
   var rows = document.getElementById("despTbody").querySelectorAll("tr");
   rows.forEach(function(tr) {
     var id = tr.id.replace("desp_","");
@@ -561,75 +561,47 @@ async function confirmarEnvio() {
     var data = document.getElementById("d_data"+id);
     var val  = document.getElementById("d_val"+id);
     if (desc && desc.value.trim()) {
-      despesas.push({
-        ordem: parseInt(id),
-        descricao: desc.value.trim(),
-        data: data ? data.value : "",
-        valor: parseValor(val ? val.value : "0")
-      });
+      despesasStr += (despesasStr ? " | " : "") +
+        desc.value.trim() + " - " +
+        (data && data.value ? data.value : "s/data") + " - R$ " +
+        (val ? val.value : "0");
     }
   });
 
-  // Converter arquivos para base64
-  var anexos = [];
-  for (var i=0; i<uploadedFiles.length; i++) {
-    var b64 = await fileToBase64(uploadedFiles[i]);
-    anexos.push({ nome: uploadedFiles[i].name, tipo: uploadedFiles[i].type, conteudo: b64 });
-  }
+  // Montar URL pré-preenchida do Forms
+  var base = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=5EB5bqEyf0y5vUC1uBC8Em6jCfd58O1KiHgkHMDcjcBUQTlEQkVRNUtJWUJRMVpLM1JFSUE4VVhYOS4u";
+  var enc = encodeURIComponent;
+  var url = base +
+    "&r0d0c7ba236454f29a75915851f6cb500=" + enc(idProcesso) +
+    "&r40edf754c5ab435bb75e99def7d0ce76=" + enc(document.getElementById("s_nome").value.trim()) +
+    "&r14c9602f22e84405b313593224b7b979=" + enc(document.getElementById("s_email").value.trim()) +
+    "&rb1afaf5ef9e14cc8927bba59f8e35a9e=" + enc(document.getElementById("c_nome").value.trim()) +
+    "&r06fafde7e06d469192432c25cc92fd3a=" + enc(document.getElementById("c_cargo").value.trim()) +
+    "&rb0c39cc0dab64d7095a980804582d2c3=" + enc(document.getElementById("c_matricula").value.trim()) +
+    "&r89b7f0cdf9434c0db23974138b184e69=" + enc(document.getElementById("c_cpf").value.trim()) +
+    "&r80f78e43e43b4661bc4a0a2313200bc6=" + enc(document.getElementById("c_cc").value.trim()) +
+    "&r3d4b631abedd4cc4ac8caf4008c6fc53=" + enc(document.getElementById("r_tipo").value) +
+    "&r755911e3c855425e99b7e27265a5330c=" + enc(document.getElementById("r_mes").value) +
+    "&r7435d4dff0b2432aaf30a0da8f75a55e=" + enc(document.getElementById("r_ano").value) +
+    "&reeddee68882b4eab9d3d74e2167b60c8=" + enc(document.getElementById("r_status").value) +
+    "&r5fced40fd034404abeb70c79bc17a7f4=" + enc(document.getElementById("b_banco").value.trim()) +
+    "&r56b4412cbb2a41748c2c255c36a8b7a2=" + enc(document.getElementById("b_tipo").value) +
+    "&rd03d8c7488e14c17924e2c8f5f456b5c=" + enc(document.getElementById("b_agencia").value.trim()) +
+    "&r5c5aeeefd0704fe9abe9aeeea0e98646=" + enc(document.getElementById("b_conta").value.trim()) +
+    "&r5d21ff6463964b29a621245ab0d493d9=" + enc(document.getElementById("b_pix").value.trim()) +
+    "&r4695853a79e34a40ae00cf854c0374bc=" + enc(String(calcTotal())) +
+    "&r22ff2dfdee8f46d89455bec4ece58292=" + enc(despesasStr);
 
-  var payload = {
-    idProcesso:      idProcesso,
-    nomeSolicitante: document.getElementById("s_nome").value.trim(),
-    emailSolicitante:document.getElementById("s_email").value.trim(),
-    nomeColaborador: document.getElementById("c_nome").value.trim(),
-    cargo:           document.getElementById("c_cargo").value.trim(),
-    matricula:       document.getElementById("c_matricula").value.trim(),
-    cpf:             document.getElementById("c_cpf").value.trim(),
-    centroCusto:     document.getElementById("c_cc").value.trim(),
-    tipoReembolso:   document.getElementById("r_tipo").value,
-    mesReferencia:   document.getElementById("r_mes").value,
-    ano:             document.getElementById("r_ano").value,
-    status:          document.getElementById("r_status").value,
-    banco:           document.getElementById("b_banco").value.trim(),
-    tipoConta:       document.getElementById("b_tipo").value,
-    agencia:         document.getElementById("b_agencia").value.trim(),
-    conta:           document.getElementById("b_conta").value.trim(),
-    chavePix:        document.getElementById("b_pix").value.trim(),
-    valorTotal:      calcTotal(),
-    dataEnvio:       new Date().toLocaleDateString("pt-BR"),
-    despesas:        despesas,
-    anexos:          anexos
-  };
+  // Abrir Forms pré-preenchido em nova aba
+  window.open(url, "_blank");
 
-  try {
-    var resp = await fetch(POWER_AUTOMATE_URL, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(payload)
-    });
-    if (resp.ok) {
-      showToast("Solicitação enviada com sucesso!", "success");
-      btn.innerHTML = "✓ Enviado";
-      btn.style.background = "#00843D";
-      setTimeout(function(){ limparFormulario(); }, 3000);
-    } else {
-      throw new Error("Erro HTTP "+resp.status);
-    }
-  } catch(e) {
-    showToast("Erro ao enviar. Verifique a conexão e tente novamente.", "error");
-    btn.disabled = false;
-    btn.innerHTML = "Enviar Solicitação →";
-  }
+  showToast("Formulário aberto! Confirme o envio no Microsoft Forms.", "success");
+  btn.disabled = false;
+  btn.innerHTML = "Enviar Solicitação →";
+  btn.style.background = "#00843D";
 }
 
-function fileToBase64(file) {
-  return new Promise(function(res, rej) {
-    var r = new FileReader();
-    r.onload = function() { res(r.result.split(",")[1]); };
-    r.onerror = function() { rej(new Error("Erro ao ler arquivo")); };
-    r.readAsDataURL(file);
-  });
-}
+
 
 // ── LIMPAR ───────────────────────────────────────────────────
 function limparFormulario() {
