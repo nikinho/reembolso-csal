@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reembolso de Despesas – CSAL T5</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --azul-escuro:#1E3A4F;
+  --azul-meio:#1a6e99;
+  --azul-claro:#009CDE;
+  --verde:#00843D;
+  --verde-bg:#e6f4ea;
+  --cinza-fundo:#F0F4F7;
+  --cinza-borda:#D1D9E0;
+  --cinza-texto:#374151;
+  --cinza-suave:#6B7280;
+  --branco:#ffffff;
+  --vermelho:#E24B4A;
+  --roxo:#534AB7;
+  --amber:#BA7517;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cinza-fundo);color:var(--cinza-texto);min-height:100vh;padding:0;}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--azul-escuro);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.topbar-logo{width:30px;height:30px;background:var(--azul-claro);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.topbar-title{color:#fff;font-size:14px;font-weight:600;}
+.topbar-sub{color:#9FE1CB;font-size:10px;margin-top:1px;}
+.topbar-id{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:11px;color:#fff;}
+
+/* ── PROGRESS ── */
+.progress-wrap{background:#fff;border-bottom:1px solid var(--cinza-borda);padding:10px 24px;}
+.steps{display:flex;align-items:flex-start;gap:0;}
+.step-group{display:flex;flex-direction:column;align-items:center;flex:1;}
+.step-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;transition:all .3s;}
+.step-dot.done{background:var(--azul-claro);color:#fff;}
+.step-dot.active{background:var(--azul-escuro);color:#fff;}
+.step-dot.todo{background:#E5E7EB;color:#9CA3AF;}
+.step-line{flex:1;height:2px;background:#E5E7EB;margin-top:10px;transition:background .3s;}
+.step-line.done{background:var(--azul-claro);}
+.step-label{font-size:8px;color:var(--cinza-suave);margin-top:3px;text-align:center;white-space:nowrap;}
+
+/* ── MAIN ── */
+.main{max-width:1100px;margin:0 auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px;}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:10px;border:0.5px solid var(--cinza-borda);overflow:hidden;}
+.card.active-card{border-color:var(--azul-claro);border-width:1.5px;}
+.card-header{padding:10px 16px 8px;border-bottom:1px solid #EEF2F5;display:flex;align-items:center;gap:8px;}
+.sec-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;flex-shrink:0;}
+.card-title{font-size:12px;font-weight:700;color:var(--azul-escuro);letter-spacing:.3px;text-transform:uppercase;}
+.card-subtitle{font-size:9px;color:#9CA3AF;margin-left:auto;font-style:italic;}
+.card-body{padding:14px 16px;}
+
+/* ── FIELD GRID ── */
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;}
+.field-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+.field-full{grid-column:span 2;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field-label{font-size:9px;font-weight:700;color:var(--cinza-suave);text-transform:uppercase;letter-spacing:.5px;}
+.req{color:var(--vermelho);}
+.field-input{background:#F8FAFC;border:0.5px solid var(--cinza-borda);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--azul-escuro);height:32px;font-family:'DM Sans',sans-serif;width:100%;outline:none;transition:border-color .2s;}
+.field-input:focus{border-color:var(--azul-claro);background:#F0F8FD;}
+select.field-input{appearance:auto;cursor:pointer;}
+.field-input::placeholder{color:#C0C8D0;font-size:11px;}
+
+/* ── TABELA DESPESAS ── */
+.desp-table{width:100%;border-collapse:collapse;font-size:11px;}
+.desp-table th{background:var(--azul-escuro);color:#fff;padding:7px 10px;text-align:left;font-weight:600;font-size:10px;letter-spacing:.3px;}
+.desp-table th:first-child{width:36px;text-align:center;}
+.desp-table th:nth-child(3){width:120px;}
+.desp-table th:nth-child(4){width:110px;text-align:right;}
+.desp-table th:last-child{width:44px;text-align:center;}
+.desp-table td{padding:5px 8px;border-bottom:0.5px solid #EEF2F5;vertical-align:middle;}
+.desp-table td:first-child{text-align:center;color:#9CA3AF;font-size:10px;font-family:'DM Mono',monospace;}
+.desp-table td:nth-child(4){text-align:right;}
+.desp-table td:last-child{text-align:center;}
+.desp-table tr:nth-child(even) td{background:#FAFBFC;}
+.td-input{background:#F8FAFC;border:0.5px solid #E5E7EB;border-radius:4px;padding:4px 7px;font-size:11px;color:var(--cinza-texto);width:100%;font-family:'DM Sans',sans-serif;outline:none;}
+.td-input:focus{border-color:var(--azul-claro);background:#F0F8FD;}
+.td-input.valor{text-align:right;font-family:'DM Mono',monospace;}
+.total-row{background:#EEF6FB;border-top:2px solid var(--azul-claro);}
+.total-row td{padding:8px 10px;font-weight:700;color:var(--azul-escuro);}
+.total-valor{font-family:'DM Mono',monospace;font-size:14px;}
+
+/* ── BOTOES DESPESA ── */
+.btn-add-desp{display:inline-flex;align-items:center;gap:5px;background:#F0F8FD;border:1px solid var(--azul-claro);color:var(--azul-claro);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;margin-top:10px;transition:all .2s;}
+.btn-add-desp:hover{background:var(--azul-claro);color:#fff;}
+.btn-remove{background:#FEF2F2;border:none;color:#E24B4A;border-radius:4px;width:26px;height:26px;cursor:pointer;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.btn-remove:hover{background:#E24B4A;color:#fff;}
+
+/* ── PIX BADGE ── */
+.pix-badge{display:inline-block;font-size:8px;background:var(--verde-bg);color:var(--verde);border:1px solid var(--verde);border-radius:3px;padding:1px 5px;font-weight:700;margin-right:4px;vertical-align:middle;}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed var(--cinza-borda);border-radius:8px;padding:20px;text-align:center;background:#FAFBFC;cursor:pointer;transition:all .2s;}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--azul-claro);background:#F0F8FD;}
+.upload-zone input{display:none;}
+.upload-title{font-size:13px;font-weight:600;color:var(--azul-escuro);margin-top:8px;}
+.upload-sub{font-size:11px;color:var(--cinza-suave);margin-top:3px;}
+.file-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.file-chip{display:inline-flex;align-items:center;gap:6px;background:#E0F0FA;border:0.5px solid #B5D4F4;border-radius:5px;padding:4px 10px;font-size:11px;color:var(--azul-escuro);}
+.file-chip-remove{cursor:pointer;color:var(--vermelho);font-weight:700;font-size:13px;line-height:1;}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0;}
+.btn{border-radius:8px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;letter-spacing:.3px;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-secondary{background:#F0F4F7;color:var(--azul-escuro);border:0.5px solid var(--cinza-borda);}
+.btn-secondary:hover{background:#E5EBF0;}
+.btn-primary{background:var(--azul-escuro);color:#fff;padding:10px 28px;}
+.btn-primary:hover{background:#264A62;}
+.btn-primary:disabled{background:#9CA3AF;cursor:not-allowed;}
+.req-note{font-size:10px;color:#9CA3AF;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:28px;max-width:420px;width:90%;text-align:center;}
+.modal-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.modal h3{font-size:16px;font-weight:700;color:var(--azul-escuro);margin-bottom:8px;}
+.modal p{font-size:13px;color:var(--cinza-suave);line-height:1.6;margin-bottom:20px;}
+.modal-btns{display:flex;gap:10px;justify-content:center;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--azul-escuro);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;transform:translateY(10px);transition:all .3s;z-index:2000;max-width:360px;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.error{background:#DC2626;}
+.toast.success{background:#00843D;}
+
+/* ── LOADING ── */
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
+        <rect x="2" y="2" width="5" height="5" rx="1" fill="#fff"/>
+        <rect x="9" y="2" width="5" height="5" rx="1" fill="#fff" opacity=".6"/>
+        <rect x="2" y="9" width="5" height="5" rx="1" fill="#fff" opacity=".6"/>
+        <rect x="9" y="9" width="5" height="5" rx="1" fill="#009CDE"/>
+      </svg>
+    </div>
+    <div>
+      <div class="topbar-title">Reembolso CSAL</div>
+      <div class="topbar-sub">0119008 · Canal Adutor do Sertão Alagoano – T5</div>
+    </div>
+  </div>
+  <div class="topbar-id" id="idProcessoTopbar">Gerando ID...</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="steps">
+    <div class="step-group"><div class="step-dot done" id="sd1">✓</div><div class="step-label">Solicitante</div></div>
+    <div class="step-line done" id="sl1"></div>
+    <div class="step-group"><div class="step-dot done" id="sd2">✓</div><div class="step-label">Colaborador</div></div>
+    <div class="step-line done" id="sl2"></div>
+    <div class="step-group"><div class="step-dot done" id="sd3">✓</div><div class="step-label">Referência</div></div>
+    <div class="step-line done" id="sl3"></div>
+    <div class="step-group"><div class="step-dot active" id="sd4">4</div><div class="step-label">Despesas</div></div>
+    <div class="step-line" id="sl4"></div>
+    <div class="step-group"><div class="step-dot todo" id="sd5">5</div><div class="step-label">Bancário</div></div>
+    <div class="step-line" id="sl5"></div>
+    <div class="step-group"><div class="step-dot todo" id="sd6">6</div><div class="step-label">Anexos</div></div>
+    <div class="step-line" id="sl6"></div>
+    <div class="step-group"><div class="step-dot todo" id="sd7">7</div><div class="step-label">Enviar</div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SEC 1: SOLICITANTE -->
+  <div class="card active-card">
+    <div class="card-header">
+      <div class="sec-num" style="background:#1D9E75;">1</div>
+      <div class="card-title">Dados do Solicitante</div>
+      <div class="card-subtitle">quem preenche este formulário</div>
+    </div>
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field">
+          <div class="field-label">Nome completo <span class="req">*</span></div>
+          <input class="field-input" type="text" id="s_nome" placeholder="Seu nome completo">
+        </div>
+        <div class="field">
+          <div class="field-label">E-mail corporativo <span class="req">*</span></div>
+          <input class="field-input" type="email" id="s_email" placeholder="voce@odebrecht.com.br">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEC 2: COLABORADOR -->
+  <div class="card">
+    <div class="card-header">
+      <div class="sec-num" style="background:#009CDE;">2</div>
+      <div class="card-title">Dados do Colaborador</div>
+      <div class="card-subtitle">trabalhador a ser reembolsado</div>
+    </div>
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field">
+          <div class="field-label">Nome completo <span class="req">*</span></div>
+          <input class="field-input" type="text" id="c_nome" placeholder="Nome do colaborador">
+        </div>
+        <div class="field">
+          <div class="field-label">Cargo / Função <span class="req">*</span></div>
+          <input class="field-input" type="text" id="c_cargo" placeholder="Ex: Pedreiro, Auxiliar...">
+        </div>
+        <div class="field">
+          <div class="field-label">Matrícula <span class="req">*</span></div>
+          <input class="field-input" type="text" id="c_matricula" placeholder="Ex: 0045812">
+        </div>
+        <div class="field">
+          <div class="field-label">CPF <span class="req">*</span></div>
+          <input class="field-input" type="text" id="c_cpf" placeholder="000.000.000-00" maxlength="14">
+        </div>
+        <div class="field field-full">
+          <div class="field-label">Centro de Custo (UA) <span class="req">*</span></div>
+          <input class="field-input" type="text" id="c_cc" value="CSAL00000">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEC 3: REFERENCIA -->
+  <div class="card">
+    <div class="card-header">
+      <div class="sec-num" style="background:#534AB7;">3</div>
+      <div class="card-title">Referência do Processo</div>
+    </div>
+    <div class="card-body">
+      <div class="field-grid cols-3">
+        <div class="field">
+          <div class="field-label">Tipo de Reembolso <span class="req">*</span></div>
+          <select class="field-input" id="r_tipo">
+            <option value="">Selecione...</option>
+            <option>Férias</option>
+            <option>Folga Periódica/Baixada</option>
+            <option>Despesas admissionais</option>
+            <option>Despesas demissionais</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">Mês de Referência <span class="req">*</span></div>
+          <select class="field-input" id="r_mes">
+            <option value="">Selecione...</option>
+            <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
+            <option>Abril</option><option>Maio</option><option>Junho</option>
+            <option>Julho</option><option>Agosto</option><option>Setembro</option>
+            <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">Ano <span class="req">*</span></div>
+          <select class="field-input" id="r_ano">
+            <option>2025</option><option selected>2026</option><option>2027</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">Nº do Processo</div>
+          <div class="field-input" id="idProcessoCampo" style="background:#F0F8FD;border-color:#B5D4F4;font-family:'DM Mono',monospace;font-size:10px;color:#009CDE;display:flex;align-items:center;">–</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Status</div>
+          <select class="field-input" id="r_status">
+            <option>Aguardando aprovação MP</option>
+            <option>Aprovado</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEC 4: DESPESAS -->
+  <div class="card">
+    <div class="card-header">
+      <div class="sec-num" style="background:#BA7517;">4</div>
+      <div class="card-title">Detalhamento das Despesas</div>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <table class="desp-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Descrição</th>
+            <th>Data</th>
+            <th>Valor (R$)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="despTbody"></tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td colspan="3" style="text-align:right;font-size:11px;color:var(--cinza-suave);font-weight:500;padding-right:12px;">Valor Total Calculado</td>
+            <td style="text-align:right;" class="total-valor" id="totalValor">R$ 0,00</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div style="padding:12px 16px;">
+        <button class="btn-add-desp" onclick="addDespesa()">
+          <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Adicionar despesa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEC 5: BANCARIO -->
+  <div class="card">
+    <div class="card-header">
+      <div class="sec-num" style="background:#1E3A4F;">5</div>
+      <div class="card-title">Dados Bancários</div>
+    </div>
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field">
+          <div class="field-label">Banco <span class="req">*</span></div>
+          <input class="field-input" type="text" id="b_banco" placeholder="Ex: Banco do Brasil">
+        </div>
+        <div class="field">
+          <div class="field-label">Tipo de Conta <span class="req">*</span></div>
+          <select class="field-input" id="b_tipo">
+            <option value="">Selecione...</option>
+            <option>Conta Corrente</option>
+            <option>Conta Poupança</option>
+            <option>Conta Salário</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">Agência <span class="req">*</span></div>
+          <input class="field-input" type="text" id="b_agencia" placeholder="Ex: 3421-7">
+        </div>
+        <div class="field">
+          <div class="field-label">Conta <span class="req">*</span></div>
+          <input class="field-input" type="text" id="b_conta" placeholder="Ex: 12345-6">
+        </div>
+        <div class="field field-full">
+          <div class="field-label"><span class="pix-badge">PIX</span> Chave Pix <span style="font-weight:400;color:#9CA3AF;">(opcional)</span></div>
+          <input class="field-input" type="text" id="b_pix" placeholder="CPF, e-mail ou telefone">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEC 6: ANEXOS -->
+  <div class="card">
+    <div class="card-header">
+      <div class="sec-num" style="background:#009CDE;">6</div>
+      <div class="card-title">Notas Fiscais <span class="req">*</span></div>
+      <div class="card-subtitle">somente PDF · obrigatório</div>
+    </div>
+    <div class="card-body">
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFiles(event)">
+        <input type="file" id="fileInput" multiple accept=".pdf" onchange="handleFiles(this.files)">
+        <svg viewBox="0 0 48 48" fill="none" width="40" height="40" style="margin:0 auto;">
+          <rect width="48" height="48" rx="10" fill="#E0F0FA"/>
+          <path d="M24 32V16M16 24l8-8 8 8" stroke="#009CDE" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="upload-title">Clique para selecionar ou arraste os arquivos</div>
+        <div class="upload-sub">Somente PDF · máximo 10 arquivos · 10 MB cada</div>
+      </div>
+      <div class="file-chips" id="fileChips"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <button class="btn btn-secondary" onclick="limparFormulario()">← Limpar</button>
+    <div class="req-note">Campos com <span style="color:var(--vermelho);">*</span> são obrigatórios</div>
+    <button class="btn btn-primary" id="btnEnviar" onclick="enviarFormulario()">Enviar Solicitação →</button>
+  </div>
+
+</div><!-- /main -->
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal">
+    <div class="modal-icon" style="background:#E0F0FA;">
+      <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16v.92z" stroke="#009CDE" stroke-width="1.5"/></svg>
+    </div>
+    <h3>Confirmar envio?</h3>
+    <p id="modalResumo">Um e-mail com a capa do processo e as notas fiscais será enviado para o financeiro e para o solicitante.</p>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarEnvio()">Confirmar envio</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIGURAÇÃO ──────────────────────────────────────────────
+var POWER_AUTOMATE_URL = "https://default6e7940e432a14c7fb9bd40b5b810bc.12.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8fc5989f7a104796a3537296646d65fd/triggers/manual/paths/invoke?api-version=1";
+
+var msalInstance = null;
+var loginRequest = { scopes: ["https://service.flow.microsoft.com//.default"] };
+
+async function initMsal() {
+  if (msalInstance) return;
+  var { PublicClientApplication } = await import("https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.esm.min.js");
+  var msalConfig = {
+    auth: {
+      clientId: "d3590ed6-52b3-4102-aeff-aad2292ab01c",
+      authority: "https://login.microsoftonline.com/common",
+      redirectUri: window.location.href.split("?")[0]
+    },
+    cache: { cacheLocation: "sessionStorage" }
+  };
+  msalInstance = new PublicClientApplication(msalConfig);
+  await msalInstance.initialize();
+}
+
+async function getToken() {
+  await initMsal();
+  var accounts = msalInstance.getAllAccounts();
+  if (accounts.length === 0) {
+    await msalInstance.loginPopup(loginRequest);
+    accounts = msalInstance.getAllAccounts();
+  }
+  try {
+    var tokenResp = await msalInstance.acquireTokenSilent({
+      ...loginRequest,
+      account: accounts[0]
+    });
+    return tokenResp.accessToken;
+  } catch(e) {
+    var tokenResp = await msalInstance.acquireTokenPopup({
+      ...loginRequest,
+      account: accounts[0]
+    });
+    return tokenResp.accessToken;
+  }
+}
+
+// ── ID DO PROCESSO ────────────────────────────────────────────
+var idProcesso = "";
+function gerarID() {
+  var now = new Date();
+  var pad = function(n){return n<10?"0"+n:n;};
+  idProcesso = "0119008_CSAL-" +
+    pad(now.getDate()) + pad(now.getMonth()+1);
+  document.getElementById("idProcessoTopbar").textContent = idProcesso;
+  document.getElementById("idProcessoCampo").textContent = idProcesso;
+}
+gerarID();
+
+// ── DESPESAS ─────────────────────────────────────────────────
+var despCount = 0;
+function addDespesa() {
+  despCount++;
+  var num = despCount < 10 ? "0"+despCount : ""+despCount;
+  var tr = document.createElement("tr");
+  tr.id = "desp_"+despCount;
+  tr.innerHTML =
+    "<td>"+num+"</td>" +
+    "<td><input class='td-input' type='text' id='d_desc"+despCount+"' placeholder='Descrição da despesa' oninput='calcTotal()'></td>" +
+    "<td><input class='td-input' type='date' id='d_data"+despCount+"'></td>" +
+    "<td><input class='td-input valor' type='text' id='d_val"+despCount+"' placeholder='0,00' oninput='fmtValor(this);calcTotal()'></td>" +
+    "<td><button class='btn-remove' onclick='removeDespesa("+despCount+")' title='Remover'>×</button></td>";
+  document.getElementById("despTbody").appendChild(tr);
+  document.getElementById("d_desc"+despCount).focus();
+}
+function removeDespesa(n) {
+  var row = document.getElementById("desp_"+n);
+  if (row) { row.remove(); calcTotal(); }
+}
+function fmtValor(el) {
+  var v = el.value.replace(/[^\d,]/g,"");
+  el.value = v;
+}
+function parseValor(str) {
+  return parseFloat((str||"0").replace(",",".")) || 0;
+}
+function calcTotal() {
+  var total = 0;
+  var rows = document.getElementById("despTbody").querySelectorAll("tr");
+  rows.forEach(function(tr) {
+    var id = tr.id.replace("desp_","");
+    var valEl = document.getElementById("d_val"+id);
+    if (valEl) total += parseValor(valEl.value);
+  });
+  document.getElementById("totalValor").textContent =
+    "R$ " + total.toFixed(2).replace(".",",").replace(/\B(?=(\d{3})+(?!\d))/g,".");
+  return total;
+}
+// Iniciar com 1 despesa
+addDespesa();
+
+// ── CPF MASK ─────────────────────────────────────────────────
+document.getElementById("c_cpf").addEventListener("input", function() {
+  var v = this.value.replace(/\D/g,"").substring(0,11);
+  v = v.replace(/(\d{3})(\d)/,"$1.$2")
+       .replace(/(\d{3})(\d)/,"$1.$2")
+       .replace(/(\d{3})(\d{1,2})$/,"$1-$2");
+  this.value = v;
+});
+
+// ── UPLOAD ───────────────────────────────────────────────────
+var uploadedFiles = [];
+function handleFiles(files) {
+  Array.from(files).forEach(function(f) {
+    if (uploadedFiles.length >= 10) { showToast("Máximo de 10 arquivos permitido","error"); return; }
+    if (!f.name.toLowerCase().endsWith(".pdf")) { showToast("Apenas arquivos PDF são permitidos","error"); return; }
+    if (f.size > 10*1024*1024) { showToast("Arquivo "+f.name+" excede 10 MB","error"); return; }
+    uploadedFiles.push(f);
+  });
+  renderChips();
+}
+function renderChips() {
+  var c = document.getElementById("fileChips");
+  c.innerHTML = "";
+  uploadedFiles.forEach(function(f,i) {
+    var chip = document.createElement("div");
+    chip.className = "file-chip";
+    chip.innerHTML =
+      "<svg viewBox='0 0 12 12' fill='none' width='12' height='12'><rect x='1' y='1' width='10' height='10' rx='1.5' stroke='#009CDE' stroke-width='1'/><path d='M3 5h6M3 7.5h4' stroke='#009CDE' stroke-width='1' stroke-linecap='round'/></svg>" +
+      "<span>"+f.name+"</span>" +
+      "<span class='file-chip-remove' onclick='removeFile("+i+")'>×</span>";
+    c.appendChild(chip);
+  });
+}
+function removeFile(i) { uploadedFiles.splice(i,1); renderChips(); }
+function dragOver(e) { e.preventDefault(); document.getElementById("uploadZone").classList.add("dragover"); }
+function dragLeave(e) { document.getElementById("uploadZone").classList.remove("dragover"); }
+function dropFiles(e) { e.preventDefault(); dragLeave(); handleFiles(e.dataTransfer.files); }
+
+// ── VALIDAÇÃO ────────────────────────────────────────────────
+function validar() {
+  var campos = [
+    {id:"s_nome",     label:"Nome do solicitante"},
+    {id:"s_email",    label:"E-mail do solicitante"},
+    {id:"c_nome",     label:"Nome do colaborador"},
+    {id:"c_cargo",    label:"Cargo"},
+    {id:"c_matricula",label:"Matrícula"},
+    {id:"c_cpf",      label:"CPF"},
+    {id:"c_cc",       label:"Centro de Custo"},
+    {id:"r_tipo",     label:"Tipo de Reembolso"},
+    {id:"r_mes",      label:"Mês de Referência"},
+    {id:"b_banco",    label:"Banco"},
+    {id:"b_tipo",     label:"Tipo de Conta"},
+    {id:"b_agencia",  label:"Agência"},
+    {id:"b_conta",    label:"Conta"},
+  ];
+  for (var i=0; i<campos.length; i++) {
+    var el = document.getElementById(campos[i].id);
+    if (!el || !el.value.trim()) {
+      showToast("Preencha o campo: " + campos[i].label, "error");
+      el && el.focus();
+      return false;
+    }
+  }
+  var rows = document.getElementById("despTbody").querySelectorAll("tr");
+  if (rows.length === 0) { showToast("Adicione ao menos uma despesa","error"); return false; }
+  var primDesc = document.getElementById("d_desc1");
+  if (!primDesc || !primDesc.value.trim()) { showToast("Preencha a descrição da primeira despesa","error"); return false; }
+  return true;
+}
+
+// ── ENVIO ────────────────────────────────────────────────────
+function enviarFormulario() {
+  if (!validar()) return;
+  if (uploadedFiles.length === 0) {
+    showToast("Anexe ao menos uma nota fiscal antes de enviar", "error");
+    return;
+  }
+  var resumo = "Reembolso de <strong>"+document.getElementById("c_nome").value+"</strong> referente a "+document.getElementById("r_mes").value+"/"+document.getElementById("r_ano").value+". Total: "+document.getElementById("totalValor").textContent;
+  document.getElementById("modalResumo").innerHTML = resumo;
+  document.getElementById("modalConfirm").classList.add("show");
+}
+function fecharModal() { document.getElementById("modalConfirm").classList.remove("show"); }
+
+async function confirmarEnvio() {
+  fecharModal();
+  var btn = document.getElementById("btnEnviar");
+  btn.disabled = true;
+  btn.innerHTML = "<span class='spinner'></span>Enviando...";
+
+  // Montar despesas
+  var despesas = [];
+  var rows = document.getElementById("despTbody").querySelectorAll("tr");
+  rows.forEach(function(tr) {
+    var id = tr.id.replace("desp_","");
+    var desc = document.getElementById("d_desc"+id);
+    var data = document.getElementById("d_data"+id);
+    var val  = document.getElementById("d_val"+id);
+    if (desc && desc.value.trim()) {
+      despesas.push({
+        ordem: parseInt(id),
+        descricao: desc.value.trim(),
+        data: data ? data.value : "",
+        valor: parseValor(val ? val.value : "0")
+      });
+    }
+  });
+
+  // Converter arquivos para base64
+  var anexos = [];
+  for (var i=0; i<uploadedFiles.length; i++) {
+    var b64 = await fileToBase64(uploadedFiles[i]);
+    anexos.push({ nome: uploadedFiles[i].name, tipo: uploadedFiles[i].type, conteudo: b64 });
+  }
+
+  var payload = {
+    idProcesso:      idProcesso,
+    nomeSolicitante: document.getElementById("s_nome").value.trim(),
+    emailSolicitante:document.getElementById("s_email").value.trim(),
+    nomeColaborador: document.getElementById("c_nome").value.trim(),
+    cargo:           document.getElementById("c_cargo").value.trim(),
+    matricula:       document.getElementById("c_matricula").value.trim(),
+    cpf:             document.getElementById("c_cpf").value.trim(),
+    centroCusto:     document.getElementById("c_cc").value.trim(),
+    tipoReembolso:   document.getElementById("r_tipo").value,
+    mesReferencia:   document.getElementById("r_mes").value,
+    ano:             document.getElementById("r_ano").value,
+    status:          document.getElementById("r_status").value,
+    banco:           document.getElementById("b_banco").value.trim(),
+    tipoConta:       document.getElementById("b_tipo").value,
+    agencia:         document.getElementById("b_agencia").value.trim(),
+    conta:           document.getElementById("b_conta").value.trim(),
+    chavePix:        document.getElementById("b_pix").value.trim(),
+    valorTotal:      calcTotal(),
+    dataEnvio:       new Date().toLocaleDateString("pt-BR"),
+    despesas:        despesas,
+    anexos:          anexos
+  };
+
+  try {
+    var token = await getToken();
+    var resp = await fetch(POWER_AUTOMATE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify(payload)
+    });
+    if (resp.ok) {
+      showToast("Solicitação enviada com sucesso!", "success");
+      btn.innerHTML = "✓ Enviado";
+      btn.style.background = "#00843D";
+      setTimeout(function(){ limparFormulario(); }, 3000);
+    } else {
+      throw new Error("Erro HTTP "+resp.status);
+    }
+  } catch(e) {
+    showToast("Erro ao enviar. Verifique a conexão e tente novamente.", "error");
+    btn.disabled = false;
+    btn.innerHTML = "Enviar Solicitação →";
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise(function(res, rej) {
+    var r = new FileReader();
+    r.onload = function() { res(r.result.split(",")[1]); };
+    r.onerror = function() { rej(new Error("Erro ao ler arquivo")); };
+    r.readAsDataURL(file);
+  });
+}
+
+// ── LIMPAR ───────────────────────────────────────────────────
+function limparFormulario() {
+  ["s_nome","s_email","c_nome","c_cargo","c_matricula","c_cpf",
+   "r_tipo","r_mes","b_banco","b_tipo","b_agencia","b_conta","b_pix"].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("c_cc").value = "CSAL00000";
+  document.getElementById("r_ano").value = "2026";
+  document.getElementById("r_status").value = "Aguardando aprovação MP";
+  document.getElementById("despTbody").innerHTML = "";
+  despCount = 0;
+  uploadedFiles = [];
+  renderChips();
+  calcTotal();
+  addDespesa();
+  gerarID();
+  var btn = document.getElementById("btnEnviar");
+  btn.disabled = false;
+  btn.innerHTML = "Enviar Solicitação →";
+  btn.style.background = "";
+}
+
+// ── TOAST ────────────────────────────────────────────────────
+function showToast(msg, tipo) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show" + (tipo ? " "+tipo : "");
+  setTimeout(function(){ t.className = "toast"; }, 4000);
+}
+</script>
+</body>
+</html>
