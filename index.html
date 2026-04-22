@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reembolso de Despesas – CSAL T5</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -22,7 +22,7 @@
   --roxo:#534AB7;
   --amber:#BA7517;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--cinza-fundo);color:var(--cinza-texto);min-height:100vh;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--cinza-fundo);color:var(--cinza-texto);min-height:100vh;padding:0;}
 
 /* ── TOPBAR ── */
 .topbar{background:var(--azul-escuro);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
@@ -30,7 +30,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cinza-fundo);color:var(--
 .topbar-logo{width:30px;height:30px;background:var(--azul-claro);border-radius:6px;display:flex;align-items:center;justify-content:center;}
 .topbar-title{color:#fff;font-size:14px;font-weight:600;}
 .topbar-sub{color:#9FE1CB;font-size:10px;margin-top:1px;}
-.topbar-id{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:11px;color:#fff;}
+.topbar-id{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;font-family:'Courier New',monospace;font-size:11px;color:#fff;}
 
 /* ── PROGRESS ── */
 .progress-wrap{background:#fff;border-bottom:1px solid var(--cinza-borda);padding:10px 24px;}
@@ -63,7 +63,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cinza-fundo);color:var(--
 .field{display:flex;flex-direction:column;gap:4px;}
 .field-label{font-size:9px;font-weight:700;color:var(--cinza-suave);text-transform:uppercase;letter-spacing:.5px;}
 .req{color:var(--vermelho);}
-.field-input{background:#F8FAFC;border:0.5px solid var(--cinza-borda);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--azul-escuro);height:32px;font-family:'DM Sans',sans-serif;width:100%;outline:none;transition:border-color .2s;}
+.field-input{background:#F8FAFC;border:0.5px solid var(--cinza-borda);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--azul-escuro);height:32px;font-family:'Segoe UI',Arial,sans-serif;width:100%;outline:none;transition:border-color .2s;}
 .field-input:focus{border-color:var(--azul-claro);background:#F0F8FD;}
 select.field-input{appearance:auto;cursor:pointer;}
 .field-input::placeholder{color:#C0C8D0;font-size:11px;}
@@ -76,16 +76,16 @@ select.field-input{appearance:auto;cursor:pointer;}
 .desp-table th:nth-child(4){width:110px;text-align:right;}
 .desp-table th:last-child{width:44px;text-align:center;}
 .desp-table td{padding:5px 8px;border-bottom:0.5px solid #EEF2F5;vertical-align:middle;}
-.desp-table td:first-child{text-align:center;color:#9CA3AF;font-size:10px;font-family:'DM Mono',monospace;}
+.desp-table td:first-child{text-align:center;color:#9CA3AF;font-size:10px;font-family:'Courier New',monospace;}
 .desp-table td:nth-child(4){text-align:right;}
 .desp-table td:last-child{text-align:center;}
 .desp-table tr:nth-child(even) td{background:#FAFBFC;}
-.td-input{background:#F8FAFC;border:0.5px solid #E5E7EB;border-radius:4px;padding:4px 7px;font-size:11px;color:var(--cinza-texto);width:100%;font-family:'DM Sans',sans-serif;outline:none;}
+.td-input{background:#F8FAFC;border:0.5px solid #E5E7EB;border-radius:4px;padding:4px 7px;font-size:11px;color:var(--cinza-texto);width:100%;font-family:'Segoe UI',Arial,sans-serif;outline:none;}
 .td-input:focus{border-color:var(--azul-claro);background:#F0F8FD;}
-.td-input.valor{text-align:right;font-family:'DM Mono',monospace;}
+.td-input.valor{text-align:right;font-family:'Courier New',monospace;}
 .total-row{background:#EEF6FB;border-top:2px solid var(--azul-claro);}
 .total-row td{padding:8px 10px;font-weight:700;color:var(--azul-escuro);}
-.total-valor{font-family:'DM Mono',monospace;font-size:14px;}
+.total-valor{font-family:'Courier New',monospace;font-size:14px;}
 
 /* ── BOTOES DESPESA ── */
 .btn-add-desp{display:inline-flex;align-items:center;gap:5px;background:#F0F8FD;border:1px solid var(--azul-claro);color:var(--azul-claro);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;margin-top:10px;transition:all .2s;}
@@ -108,7 +108,7 @@ select.field-input{appearance:auto;cursor:pointer;}
 
 /* ── BOTTOM BAR ── */
 .bottom-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0;}
-.btn{border-radius:8px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;letter-spacing:.3px;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn{border-radius:8px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;letter-spacing:.3px;font-family:'Segoe UI',Arial,sans-serif;transition:all .2s;}
 .btn-secondary{background:#F0F4F7;color:var(--azul-escuro);border:0.5px solid var(--cinza-borda);}
 .btn-secondary:hover{background:#E5EBF0;}
 .btn-primary{background:var(--azul-escuro);color:#fff;padding:10px 28px;}
@@ -270,7 +270,7 @@ select.field-input{appearance:auto;cursor:pointer;}
         </div>
         <div class="field">
           <div class="field-label">Nº do Processo</div>
-          <div class="field-input" id="idProcessoCampo" style="background:#F0F8FD;border-color:#B5D4F4;font-family:'DM Mono',monospace;font-size:10px;color:#009CDE;display:flex;align-items:center;">–</div>
+          <div class="field-input" id="idProcessoCampo" style="background:#F0F8FD;border-color:#B5D4F4;font-family:'Courier New',monospace;font-size:10px;color:#009CDE;display:flex;align-items:center;">–</div>
         </div>
         <div class="field">
           <div class="field-label">Status</div>
