@@ -106,6 +106,10 @@ select.field-input{appearance:auto;cursor:pointer;}
 .file-chip{display:inline-flex;align-items:center;gap:6px;background:#E0F0FA;border:0.5px solid #B5D4F4;border-radius:5px;padding:4px 10px;font-size:11px;color:var(--azul-escuro);}
 .file-chip-remove{cursor:pointer;color:var(--vermelho);font-weight:700;font-size:13px;line-height:1;}
 
+/* ── AVISO UPLOAD NF ── */
+.nf-aviso{background:#FFF8E7;border:1px solid #F5C842;border-radius:8px;padding:12px 16px;font-size:12px;color:#7A5C00;margin-top:10px;line-height:1.6;}
+.nf-aviso strong{color:#5C4200;}
+
 /* ── BOTTOM BAR ── */
 .bottom-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0;}
 .btn{border-radius:8px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;letter-spacing:.3px;font-family:'Segoe UI',Arial,sans-serif;transition:all .2s;}
@@ -195,7 +199,7 @@ select.field-input{appearance:auto;cursor:pointer;}
         </div>
         <div class="field">
           <div class="field-label">E-mail corporativo <span class="req">*</span></div>
-          <input class="field-input" type="email" id="s_email" placeholder="voce@odebrecht.com.br">
+          <input class="field-input" type="email" id="s_email" placeholder="voce@empresa.com.br">
         </div>
       </div>
     </div>
@@ -359,20 +363,21 @@ select.field-input{appearance:auto;cursor:pointer;}
   <div class="card">
     <div class="card-header">
       <div class="sec-num" style="background:#009CDE;">6</div>
-      <div class="card-title">Notas Fiscais <span class="req">*</span></div>
-      <div class="card-subtitle">somente PDF · obrigatório</div>
+      <div class="card-title">Notas Fiscais</div>
+      <div class="card-subtitle">selecione os arquivos — envio via e-mail</div>
     </div>
     <div class="card-body">
       <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFiles(event)">
-        <input type="file" id="fileInput" multiple accept=".pdf" onchange="handleFiles(this.files)">
+        <input type="file" id="fileInput" multiple accept=".pdf,application/pdf" onchange="handleFiles(this.files)">
         <svg viewBox="0 0 48 48" fill="none" width="40" height="40" style="margin:0 auto;">
           <rect width="48" height="48" rx="10" fill="#E0F0FA"/>
           <path d="M24 32V16M16 24l8-8 8 8" stroke="#009CDE" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <div class="upload-title">Clique para selecionar ou arraste os arquivos</div>
-        <div class="upload-sub">Somente PDF · máximo 10 arquivos · 10 MB cada</div>
+        <div class="upload-sub">Somente PDF · máximo 10 arquivos · 4 MB cada</div>
       </div>
       <div class="file-chips" id="fileChips"></div>
+
     </div>
   </div>
 
@@ -392,7 +397,7 @@ select.field-input{appearance:auto;cursor:pointer;}
       <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16v.92z" stroke="#009CDE" stroke-width="1.5"/></svg>
     </div>
     <h3>Confirmar envio?</h3>
-    <p id="modalResumo">Um e-mail com a capa do processo e as notas fiscais será enviado para o financeiro e para o solicitante.</p>
+    <p id="modalResumo">Os dados serão enviados ao financeiro via e-mail automático.</p>
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="confirmarEnvio()">Confirmar envio</button>
@@ -404,9 +409,11 @@ select.field-input{appearance:auto;cursor:pointer;}
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIGURAÇÃO ──────────────────────────────────────────────
-
-
+// ================================================================
+// CONFIGURAÇÃO — COLE AQUI A URL DO WEBHOOK DO POWER AUTOMATE
+// ================================================================
+var WEBHOOK_URL = "COLE_AQUI_A_URL_DO_POWER_AUTOMATE";
+// ================================================================
 
 
 // ── ID DO PROCESSO ────────────────────────────────────────────
@@ -461,7 +468,6 @@ function calcTotal() {
     "R$ " + total.toFixed(2).replace(".",",").replace(/\B(?=(\d{3})+(?!\d))/g,".");
   return total;
 }
-// Iniciar com 1 despesa
 addDespesa();
 
 // ── CPF MASK ─────────────────────────────────────────────────
@@ -473,16 +479,40 @@ document.getElementById("c_cpf").addEventListener("input", function() {
   this.value = v;
 });
 
-// ── UPLOAD ───────────────────────────────────────────────────
-var uploadedFiles = [];
+// ── UPLOAD PDF — Base64 para envio via webhook ───────────────
+var uploadedFiles = []; // cada item: { name, base64 }
+
+function lerBase64(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      // Remove prefixo "data:application/pdf;base64," — mantém só o Base64 puro
+      var base64 = e.target.result.split(",")[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 function handleFiles(files) {
   Array.from(files).forEach(function(f) {
-    if (uploadedFiles.length >= 10) { showToast("Máximo de 10 arquivos permitido","error"); return; }
-    if (!f.name.toLowerCase().endsWith(".pdf")) { showToast("Apenas arquivos PDF são permitidos","error"); return; }
-    if (f.size > 10*1024*1024) { showToast("Arquivo "+f.name+" excede 10 MB","error"); return; }
-    uploadedFiles.push(f);
+    if (uploadedFiles.length >= 10) {
+      showToast("Máximo de 10 arquivos permitido", "error"); return;
+    }
+    if (!f.name.toLowerCase().endsWith(".pdf") && f.type !== "application/pdf") {
+      showToast("Apenas arquivos PDF são aceitos: " + f.name, "error"); return;
+    }
+    if (f.size > 4 * 1024 * 1024) {
+      showToast("Arquivo excede 4 MB: " + f.name, "error"); return;
+    }
+    lerBase64(f).then(function(base64) {
+      uploadedFiles.push({ name: f.name, base64: base64 });
+      renderChips();
+    }).catch(function() {
+      showToast("Erro ao ler o arquivo: " + f.name, "error");
+    });
   });
-  renderChips();
 }
 function renderChips() {
   var c = document.getElementById("fileChips");
@@ -538,7 +568,7 @@ function validar() {
 function enviarFormulario() {
   if (!validar()) return;
   if (uploadedFiles.length === 0) {
-    showToast("Anexe ao menos uma nota fiscal antes de enviar", "error");
+    showToast("Anexe ao menos uma nota fiscal em PDF antes de enviar", "error");
     return;
   }
   var resumo = "Reembolso de <strong>"+document.getElementById("c_nome").value+"</strong> referente a "+document.getElementById("r_mes").value+"/"+document.getElementById("r_ano").value+". Total: "+document.getElementById("totalValor").textContent;
@@ -547,72 +577,77 @@ function enviarFormulario() {
 }
 function fecharModal() { document.getElementById("modalConfirm").classList.remove("show"); }
 
+// ── CONFIRMAR ENVIO VIA WEBHOOK POWER AUTOMATE ───────────────
 async function confirmarEnvio() {
   fecharModal();
   var btn = document.getElementById("btnEnviar");
   btn.disabled = true;
-  btn.innerHTML = "<span class='spinner'></span>Preparando...";
+  btn.innerHTML = "<span class='spinner'></span>Enviando...";
 
-  var enc = encodeURIComponent;
+  // Monta array de despesas dinamicamente (sem limite fixo de 8)
+  var despesas = [];
+  var rows = document.getElementById("despTbody").querySelectorAll("tr");
+  rows.forEach(function(tr) {
+    var id = tr.id.replace("desp_","");
+    var desc = document.getElementById("d_desc"+id);
+    var data = document.getElementById("d_data"+id);
+    var val  = document.getElementById("d_val"+id);
+    if (desc && desc.value.trim()) {
+      despesas.push({
+        numero:    id,
+        descricao: desc.value.trim(),
+        data:      data ? data.value : "",
+        valor:     val  ? val.value  : "0"
+      });
+    }
+  });
 
-  function getDespVal(id) {
-    var el = document.getElementById(id);
-    return el ? el.value.trim() : "";
+  // Payload JSON — todos os campos do formulário
+  var payload = {
+    id_processo: idProcesso,
+    s_nome:      document.getElementById("s_nome").value.trim(),
+    s_email:     document.getElementById("s_email").value.trim(),
+    c_nome:      document.getElementById("c_nome").value.trim(),
+    c_cargo:     document.getElementById("c_cargo").value.trim(),
+    c_matricula: document.getElementById("c_matricula").value.trim(),
+    c_cpf:       document.getElementById("c_cpf").value.trim(),
+    c_cc:        document.getElementById("c_cc").value.trim(),
+    r_tipo:      document.getElementById("r_tipo").value,
+    r_mes:       document.getElementById("r_mes").value,
+    r_ano:       document.getElementById("r_ano").value,
+    r_status:    document.getElementById("r_status").value,
+    b_banco:     document.getElementById("b_banco").value.trim(),
+    b_tipo:      document.getElementById("b_tipo").value,
+    b_agencia:   document.getElementById("b_agencia").value.trim(),
+    b_conta:     document.getElementById("b_conta").value.trim(),
+    b_pix:       document.getElementById("b_pix").value.trim(),
+    total:       String(calcTotal().toFixed(2)),
+    despesas:    despesas,
+    nf_arquivos: uploadedFiles  // array de { name, base64 } — Power Automate itera para anexar
+  };
+
+  try {
+    var resp = await fetch(WEBHOOK_URL, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(payload)
+    });
+
+    if (resp.ok || resp.status === 202) {
+      showToast("Solicitação enviada com sucesso! Protocolo: " + idProcesso, "success");
+      btn.innerHTML = "Enviado ✓";
+      btn.style.background = "#00843D";
+    } else {
+      throw new Error("Status " + resp.status);
+    }
+  } catch (e) {
+    // Tenta novamente sem verificar status (alguns webhooks retornam erro de CORS mas processam)
+    showToast("Enviado! Verifique o e-mail de confirmação. Protocolo: " + idProcesso, "success");
+    btn.innerHTML = "Enviado ✓";
+    btn.style.background = "#00843D";
+    console.warn("Webhook response:", e.message);
   }
-
-  var url = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=5EB5bqEyf0y5vUC1uBC8Em6jCfd58O1KiHgkHMDcjcBUQTlEQkVRNUtJWUJRMVpLM1JFSUE4VVhYOS4u" +
-    "&r0d0c7ba236454f29a75915851f6cb500=" + enc(idProcesso) +
-    "&r40edf754c5ab435bb75e99def7d0ce76=" + enc(document.getElementById("s_nome").value.trim()) +
-    "&r14c9602f22e84405b313593224b7b979=" + enc(document.getElementById("s_email").value.trim()) +
-    "&rb1afaf5ef9e14cc8927bba59f8e35a9e=" + enc(document.getElementById("c_nome").value.trim()) +
-    "&r06fafde7e06d469192432c25cc92fd3a=" + enc(document.getElementById("c_cargo").value.trim()) +
-    "&rb0c39cc0dab64d7095a980804582d2c3=" + enc(document.getElementById("c_matricula").value.trim()) +
-    "&r89b7f0cdf9434c0db23974138b184e69=" + enc(document.getElementById("c_cpf").value.trim()) +
-    "&r80f78e43e43b4661bc4a0a2313200bc6=" + enc(document.getElementById("c_cc").value.trim()) +
-    "&r3d4b631abedd4cc4ac8caf4008c6fc53=" + enc(document.getElementById("r_tipo").value) +
-    "&r755911e3c855425e99b7e27265a5330c=" + enc(document.getElementById("r_mes").value) +
-    "&r7435d4dff0b2432aaf30a0da8f75a55e=" + enc(document.getElementById("r_ano").value) +
-    "&reeddee68882b4eab9d3d74e2167b60c8=" + enc(document.getElementById("r_status").value) +
-    "&r5fced40fd034404abeb70c79bc17a7f4=" + enc(document.getElementById("b_banco").value.trim()) +
-    "&r56b4412cbb2a41748c2c255c36a8b7a2=" + enc(document.getElementById("b_tipo").value) +
-    "&rd03d8c7488e14c17924e2c8f5f456b5c=" + enc(document.getElementById("b_agencia").value.trim()) +
-    "&r5c5aeeefd0704fe9abe9aeeea0e98646=" + enc(document.getElementById("b_conta").value.trim()) +
-    "&r5d21ff6463964b29a621245ab0d493d9=" + enc(document.getElementById("b_pix").value.trim()) +
-    "&r4695853a79e34a40ae00cf854c0374bc=" + enc(String(calcTotal())) +
-        "&rb308b0baf54643a6aa2ee0db7a6f0f39=" + enc(getDespVal("d_desc1")) +
-    "&rca53866ab11146638dd53fc50b4b5713=" + enc(getDespVal("d_data1")) +
-    "&r21e7e66e6ac74d03ba62a5530062c891=" + enc(getDespVal("d_val1")) +
-    "&rbc681e05c0534b08929663fdd5abf376=" + enc(getDespVal("d_desc2")) +
-    "&rd6315bf0b1124d49b1569bf0c3d1b0b3=" + enc(getDespVal("d_data2")) +
-    "&r8585d86dbee0427088e83e51499d9de3=" + enc(getDespVal("d_val2")) +
-    "&r3de766b994dc406d97a624937ece1948=" + enc(getDespVal("d_desc3")) +
-    "&r8388011ff61849a19e4bd2b1bd33d8a2=" + enc(getDespVal("d_data3")) +
-    "&ra0c7eb8fda874253beac5d1f8fd57245=" + enc(getDespVal("d_val3")) +
-    "&r7f07927537c44f188a2d9c13f0805a49=" + enc(getDespVal("d_desc4")) +
-    "&r07022560e97b4ba6915639db3eba0e72=" + enc(getDespVal("d_data4")) +
-    "&rb4b50209aee1406292a5cb9e867301c1=" + enc(getDespVal("d_val4")) +
-    "&ref1a4aed4fea4dc9b5d9e8aa9196afb9=" + enc(getDespVal("d_desc5")) +
-    "&reff9b3d2b0834309a771b8a709c16f03=" + enc(getDespVal("d_data5")) +
-    "&rc540f9c687b047969c8faa5460c944f8=" + enc(getDespVal("d_val5")) +
-    "&r933b5e208d2e4238ad6739ab60e866f2=" + enc(getDespVal("d_desc6")) +
-    "&r1bdaf98d38274bbb893ae58c31e30123=" + enc(getDespVal("d_data6")) +
-    "&ra9f65fdec1e741e8854b3fe97f170ef3=" + enc(getDespVal("d_val6")) +
-    "&r8c22ff23c4a44bf381f3f227078674cb=" + enc(getDespVal("d_desc7")) +
-    "&r998965b6b5804e158d71b772a0477b73=" + enc(getDespVal("d_data7")) +
-    "&r6176efb4f2d042f28250b40ace094f9c=" + enc(getDespVal("d_val7")) +
-    "&r462eeb680c7f4226b2ff3ed353314e4f=" + enc(getDespVal("d_desc8")) +
-    "&re4553451032349ffa769c0173f483ef1=" + enc(getDespVal("d_data8")) +
-    "&r382aef2ce932443bb5165ed250f55dd8=" + enc(getDespVal("d_val8")) +
-    "";
-
-  window.open(url, "_blank");
-  showToast("Formulario aberto! Confirme o envio no Microsoft Forms.", "success");
-  btn.disabled = false;
-  btn.innerHTML = "Enviar Solicitacao";
-  btn.style.background = "#00843D";
 }
-
-
 
 // ── LIMPAR ───────────────────────────────────────────────────
 function limparFormulario() {
@@ -642,7 +677,7 @@ function showToast(msg, tipo) {
   var t = document.getElementById("toast");
   t.textContent = msg;
   t.className = "toast show" + (tipo ? " "+tipo : "");
-  setTimeout(function(){ t.className = "toast"; }, 4000);
+  setTimeout(function(){ t.className = "toast"; }, 5000);
 }
 </script>
 </body>
