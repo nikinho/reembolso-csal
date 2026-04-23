@@ -415,7 +415,8 @@ function gerarID() {
   var now = new Date();
   var pad = function(n){return n<10?"0"+n:n;};
   idProcesso = "0119008_CSAL-" +
-    pad(now.getDate()) + pad(now.getMonth()+1);
+    pad(now.getDate()) + pad(now.getMonth()+1) +
+    pad(now.getHours()) + pad(now.getMinutes());
   document.getElementById("idProcessoTopbar").textContent = idProcesso;
   document.getElementById("idProcessoCampo").textContent = idProcesso;
 }
@@ -552,26 +553,14 @@ async function confirmarEnvio() {
   btn.disabled = true;
   btn.innerHTML = "<span class='spinner'></span>Preparando...";
 
-  // Montar string de despesas
-  var despesasStr = "";
-  var rows = document.getElementById("despTbody").querySelectorAll("tr");
-  rows.forEach(function(tr) {
-    var id = tr.id.replace("desp_","");
-    var desc = document.getElementById("d_desc"+id);
-    var data = document.getElementById("d_data"+id);
-    var val  = document.getElementById("d_val"+id);
-    if (desc && desc.value.trim()) {
-      despesasStr += (despesasStr ? " | " : "") +
-        desc.value.trim() + " - " +
-        (data && data.value ? data.value : "s/data") + " - R$ " +
-        (val ? val.value : "0");
-    }
-  });
-
-  // Montar URL pré-preenchida do Forms
-  var base = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=5EB5bqEyf0y5vUC1uBC8Em6jCfd58O1KiHgkHMDcjcBUQTlEQkVRNUtJWUJRMVpLM1JFSUE4VVhYOS4u";
   var enc = encodeURIComponent;
-  var url = base +
+
+  function getDespVal(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+  }
+
+  var url = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=5EB5bqEyf0y5vUC1uBC8Em6jCfd58O1KiHgkHMDcjcBUQTlEQkVRNUtJWUJRMVpLM1JFSUE4VVhYOS4u" +
     "&r0d0c7ba236454f29a75915851f6cb500=" + enc(idProcesso) +
     "&r40edf754c5ab435bb75e99def7d0ce76=" + enc(document.getElementById("s_nome").value.trim()) +
     "&r14c9602f22e84405b313593224b7b979=" + enc(document.getElementById("s_email").value.trim()) +
@@ -590,14 +579,36 @@ async function confirmarEnvio() {
     "&r5c5aeeefd0704fe9abe9aeeea0e98646=" + enc(document.getElementById("b_conta").value.trim()) +
     "&r5d21ff6463964b29a621245ab0d493d9=" + enc(document.getElementById("b_pix").value.trim()) +
     "&r4695853a79e34a40ae00cf854c0374bc=" + enc(String(calcTotal())) +
-    "&r22ff2dfdee8f46d89455bec4ece58292=" + enc(despesasStr);
+        "&rb308b0baf54643a6aa2ee0db7a6f0f39=" + enc(getDespVal("d_desc1")) +
+    "&rca53866ab11146638dd53fc50b4b5713=" + enc(getDespVal("d_data1")) +
+    "&r21e7e66e6ac74d03ba62a5530062c891=" + enc(getDespVal("d_val1")) +
+    "&rbc681e05c0534b08929663fdd5abf376=" + enc(getDespVal("d_desc2")) +
+    "&rd6315bf0b1124d49b1569bf0c3d1b0b3=" + enc(getDespVal("d_data2")) +
+    "&r8585d86dbee0427088e83e51499d9de3=" + enc(getDespVal("d_val2")) +
+    "&r3de766b994dc406d97a624937ece1948=" + enc(getDespVal("d_desc3")) +
+    "&r8388011ff61849a19e4bd2b1bd33d8a2=" + enc(getDespVal("d_data3")) +
+    "&ra0c7eb8fda874253beac5d1f8fd57245=" + enc(getDespVal("d_val3")) +
+    "&r7f07927537c44f188a2d9c13f0805a49=" + enc(getDespVal("d_desc4")) +
+    "&r07022560e97b4ba6915639db3eba0e72=" + enc(getDespVal("d_data4")) +
+    "&rb4b50209aee1406292a5cb9e867301c1=" + enc(getDespVal("d_val4")) +
+    "&ref1a4aed4fea4dc9b5d9e8aa9196afb9=" + enc(getDespVal("d_desc5")) +
+    "&reff9b3d2b0834309a771b8a709c16f03=" + enc(getDespVal("d_data5")) +
+    "&rc540f9c687b047969c8faa5460c944f8=" + enc(getDespVal("d_val5")) +
+    "&r933b5e208d2e4238ad6739ab60e866f2=" + enc(getDespVal("d_desc6")) +
+    "&r1bdaf98d38274bbb893ae58c31e30123=" + enc(getDespVal("d_data6")) +
+    "&ra9f65fdec1e741e8854b3fe97f170ef3=" + enc(getDespVal("d_val6")) +
+    "&r8c22ff23c4a44bf381f3f227078674cb=" + enc(getDespVal("d_desc7")) +
+    "&r998965b6b5804e158d71b772a0477b73=" + enc(getDespVal("d_data7")) +
+    "&r6176efb4f2d042f28250b40ace094f9c=" + enc(getDespVal("d_val7")) +
+    "&r462eeb680c7f4226b2ff3ed353314e4f=" + enc(getDespVal("d_desc8")) +
+    "&re4553451032349ffa769c0173f483ef1=" + enc(getDespVal("d_data8")) +
+    "&r382aef2ce932443bb5165ed250f55dd8=" + enc(getDespVal("d_val8")) +
+    "";
 
-  // Abrir Forms pré-preenchido em nova aba
   window.open(url, "_blank");
-
-  showToast("Formulário aberto! Confirme o envio no Microsoft Forms.", "success");
+  showToast("Formulario aberto! Confirme o envio no Microsoft Forms.", "success");
   btn.disabled = false;
-  btn.innerHTML = "Enviar Solicitação →";
+  btn.innerHTML = "Enviar Solicitacao";
   btn.style.background = "#00843D";
 }
 
