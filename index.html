@@ -274,12 +274,27 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
 
 /* ── NF AVISO ────────────────────────────────────── */
 .nf-aviso{
+  background:#FFF5F5;border:1px solid rgba(220,38,38,.25);
+  border-left:4px solid var(--red);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  padding:12px 16px;font-size:12.5px;color:#991B1B;
+  margin-top:12px;line-height:1.7;
+}
+.nf-aviso-header{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.nf-aviso-atencao{
+  font-size:12px;font-weight:700;color:#DC2626;
+  letter-spacing:.8px;animation:pulse 1.2s infinite;
+}
+/* ── MODAL AVISO ─────────────────────────────────── */
+.modal-aviso{
+  display:flex;align-items:flex-start;gap:8px;
   background:var(--amber-bg);border:1px solid rgba(186,117,23,.3);
   border-left:3px solid var(--amber);
   border-radius:0 var(--radius-sm) var(--radius-sm) 0;
   padding:10px 14px;font-size:11.5px;color:#7A5C00;
-  margin-top:12px;line-height:1.6;
+  line-height:1.6;text-align:left;margin-bottom:20px;
 }
+.modal-aviso strong{color:#5C4200;}
 
 /* ── BOTTOM BAR ──────────────────────────────────── */
 .bottom-bar{
@@ -426,6 +441,26 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   letter-spacing:.2px;z-index:0;
   transition:left .05s;
 }
+
+/* ── CENTRO DE CUSTO ────────────────────────────────────────── */
+.cc-wrap{
+  display:flex;align-items:center;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);height:36px;overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+}
+.cc-wrap:focus-within{border-color:var(--blue);background:#F8FCFF;box-shadow:0 0 0 3px rgba(0,156,222,.1);}
+.cc-prefix{
+  padding:0 0 0 12px;white-space:nowrap;flex-shrink:0;
+  font-size:13px;font-weight:700;color:var(--navy);letter-spacing:.5px;
+}
+.cc-input{
+  border:none!important;box-shadow:none!important;outline:none!important;
+  background:transparent!important;flex:1;min-width:0;
+  padding:0 12px 0 0!important;height:100%;
+  font-size:13px;color:var(--navy);font-family:var(--font);font-weight:700;
+}
+.cc-input::placeholder{color:#B5C2CC;}
 </style>
 </head>
 <body>
@@ -541,7 +576,7 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
         </div>
         <div class="field">
           <div class="field-label">Matrícula <span class="req">*</span></div>
-          <input class="field-input" type="text" id="c_matricula" placeholder="Ex: 00045812">
+          <input class="field-input" type="text" id="c_matricula" placeholder="Ex: 00045812" readonly>
         </div>
         <div class="field">
           <div class="field-label">CPF <span class="req">*</span></div>
@@ -549,7 +584,11 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
         </div>
         <div class="field field-full">
           <div class="field-label">Centro de Custo (UA) <span class="req">*</span></div>
-          <input class="field-input" type="text" id="c_cc" value="CSAL00000">
+          <div class="cc-wrap">
+            <span class="cc-prefix">CSAL</span>
+            <input class="field-input cc-input" type="text" id="c_cc_sufixo" placeholder="00000" autocomplete="off" readonly tabindex="0">
+          </div>
+          <input type="hidden" id="c_cc" value="CSAL00000">
         </div>
       </div>
     </div>
@@ -711,7 +750,13 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
       </div>
       <div class="file-chips" id="fileChips"></div>
       <div class="nf-aviso">
-        <strong>Atenção:</strong> Apenas arquivos em formato <strong>PDF</strong> são aceitos. Certifique-se de que cada nota fiscal esteja legível e dentro do prazo de reembolso.
+        <div class="nf-aviso-header">
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16" style="flex-shrink:0;margin-top:1px;">
+            <path d="M9 7h2v2H9V7zm0 4h2v4H9v-4zm1-9C5.03 2 2 5.03 2 9s3.03 7 8 7 8-3.03 8-7-3.03-7-8-7z" fill="#DC2626"/>
+          </svg>
+          <strong class="nf-aviso-atencao">ATENÇÃO</strong>
+        </div>
+        Apenas arquivos em formato <strong>PDF</strong> são aceitos. Certifique-se de que cada nota fiscal esteja <strong>legível</strong> e dentro do <strong>prazo de reembolso</strong>.
       </div>
     </div>
   </div>
@@ -740,7 +785,14 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
       </svg>
     </div>
     <h3>Confirmar envio?</h3>
-    <p id="modalResumo">Os dados serão enviados ao financeiro via e-mail automático.</p>
+    <p id="modalResumo" style="margin-bottom:12px;">Os dados serão enviados ao financeiro via e-mail automático.</p>
+    <div class="modal-aviso">
+      <svg viewBox="0 0 20 20" fill="none" width="14" height="14" style="flex-shrink:0;margin-top:1px;">
+        <circle cx="10" cy="10" r="8" stroke="#BA7517" stroke-width="1.5"/>
+        <path d="M10 6v5M10 13v1" stroke="#BA7517" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      As notas fiscais anexadas serão analisadas pelo setor financeiro. Você receberá um <strong>e-mail de confirmação</strong> ou <strong>recusa</strong> após a análise.
+    </div>
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="confirmarEnvio()">Confirmar envio</button>
@@ -914,7 +966,7 @@ function validar() {
     {id:"c_cargo",     label:"Cargo"},
     {id:"c_matricula", label:"Matrícula"},
     {id:"c_cpf",       label:"CPF"},
-    {id:"c_cc",        label:"Centro de Custo"},
+    {id:"c_cc_sufixo", label:"Centro de Custo"},
     {id:"r_tipo",      label:"Tipo de Reembolso"},
     {id:"r_mes",       label:"Mês de Referência"},
     {id:"b_banco",     label:"Banco"},
@@ -1015,7 +1067,7 @@ function limparFormulario() {
    "r_tipo","r_mes","b_banco","b_tipo","b_agencia","b_conta","b_pix"].forEach(function(id){
     var el = document.getElementById(id); if (el) el.value = "";
   });
-  document.getElementById("c_cc").value = "CSAL00000"; matriculaRaw = []; document.getElementById("s_email_login").value = ""; document.getElementById("s_email").value = "";
+  ccRaw = []; renderCC(); matriculaRaw = []; document.getElementById("s_email_login").value = ""; document.getElementById("s_email").value = "";
   document.getElementById("r_ano").value = "2026";
   document.getElementById("r_status").value = "Aguardando aprovação MP"; updateStatusDot();
   document.getElementById("despTbody").innerHTML = "";
@@ -1054,6 +1106,34 @@ function updateStatusDot() {
     dot.className = "status-pulse red";
   }
 }
+
+// ── CENTRO DE CUSTO ──────────────────────────────────────────
+var ccRaw = [];
+var ccEl = document.getElementById("c_cc_sufixo");
+
+function renderCC() {
+  ccEl.value = ccRaw.join("");
+  document.getElementById("c_cc").value = "CSAL" + ccRaw.join("");
+}
+
+ccEl.addEventListener("keydown", function(e) {
+  if (/^[0-9]$/.test(e.key)) {
+    e.preventDefault();
+    ccRaw.push(e.key);
+    renderCC();
+  } else if (e.key === "Backspace") {
+    e.preventDefault();
+    ccRaw.pop();
+    renderCC();
+  } else if (e.key === "Delete") {
+    e.preventDefault();
+    ccRaw = [];
+    renderCC();
+  }
+});
+
+ccEl.addEventListener("click", function() { this.focus(); });
+renderCC();
 
 // ── EMAIL LOGIN ───────────────────────────────────────────────
 var emailEl   = document.getElementById("s_email_login");
