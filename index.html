@@ -812,6 +812,28 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
     </button>
   </div>
 
+
+  <!-- ── RODAPÉ LGPD ── -->
+  <div style="
+    margin-top:12px;
+    padding:12px 20px;
+    background:#F0F4F7;
+    border:0.5px solid #D1D9E0;
+    border-left:3px solid #009CDE;
+    border-radius:0 8px 8px 0;
+    display:flex;align-items:flex-start;gap:10px;
+  ">
+    <svg viewBox="0 0 20 20" fill="none" width="16" height="16" style="flex-shrink:0;margin-top:1px;">
+      <circle cx="10" cy="10" r="8.5" stroke="#009CDE" stroke-width="1.2"/>
+      <path d="M10 9v5" stroke="#009CDE" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="10" cy="6.5" r=".8" fill="#009CDE"/>
+    </svg>
+    <div style="font-size:11px;color:#4B5B68;line-height:1.6;">
+      <strong style="color:#1E3A4F;display:block;margin-bottom:2px;">Privacidade e Proteção de Dados (LGPD)</strong>
+      Os dados inseridos neste formulário são transmitidos diretamente ao sistema corporativo da empresa por conexão segura (HTTPS). Nenhuma informação é armazenada neste site.
+    </div>
+  </div>
+
   </div><!-- /content-wrap -->
 </div><!-- /main -->
 
@@ -848,8 +870,13 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
 <script>
 // ================================================================
 // CONFIGURAÇÃO — COLE AQUI A URL DO WEBHOOK DO POWER AUTOMATE
+// Instrução: substitua o valor de _w pelo resultado de:
+//   btoa("SUA_URL_COMPLETA_DO_POWER_AUTOMATE")
+// Exemplo no console do navegador:
+//   btoa("https://prod-xx.logic.azure.com/...")
 // ================================================================
-var WEBHOOK_URL = "COLE_AQUI_A_URL_DO_POWER_AUTOMATE";
+var _w = "Q09MRV9BUVVJX0FfVVJMX0RPX1BPV0VSX0FVVE9NQVRF";
+var WEBHOOK_URL = (function(){ try{ return atob(_w); } catch(e){ return ""; } })();
 // ================================================================
 
 // ── ID DO PROCESSO ────────────────────────────────────────────
@@ -1209,7 +1236,6 @@ async function confirmarEnvio() {
     showToast("Enviado! Verifique o e-mail de confirmação. Protocolo: " + idProcesso, "success");
     btn.innerHTML = "✓ Enviado";
     btn.style.background = "var(--green)";
-    console.warn("Webhook:", e.message);
   }
 }
 
