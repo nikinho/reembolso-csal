@@ -67,31 +67,61 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .topbar-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 
-/* ── PROGRESS BAR ────────────────────────────────── */
-.progress-wrap{
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  padding:12px 32px 10px;
-}
-.steps{display:flex;align-items:center;}
-.step-item{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;}
-.step-connector{flex:1;height:2px;background:var(--border-soft);margin:0 2px;margin-bottom:14px;transition:background .4s;}
-.step-connector.done{background:var(--blue);}
-.step-dot{
-  width:24px;height:24px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;font-weight:700;letter-spacing:0;
-  transition:all .3s;border:2px solid transparent;
-}
-.step-dot.done{background:var(--blue);color:#fff;}
-.step-dot.active{background:var(--navy);color:#fff;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,156,222,.15);}
-.step-dot.todo{background:var(--border-soft);color:var(--text-muted);border-color:var(--border);}
-.step-dot.done svg{display:block;}
-.step-label{font-size:8.5px;color:var(--text-muted);margin-top:4px;text-align:center;letter-spacing:.3px;font-weight:500;}
-.step-item.active .step-label{color:var(--navy);font-weight:600;}
 
 /* ── LAYOUT ────────────────────────────────────── */
-.main{max-width:1060px;margin:0 auto;padding:24px 32px 40px;display:flex;flex-direction:column;gap:16px;}
+/* ── SIDEBAR PROGRESSO ─────────────────────────────── */
+.sidebar-progress{
+  width:200px;flex-shrink:0;
+  position:sticky;top:72px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);
+  padding:20px 0 16px;
+  display:flex;flex-direction:column;
+}
+.sidebar-title{
+  font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--text-muted);padding:0 18px 14px;
+  border-bottom:1px solid var(--border-soft);margin-bottom:6px;
+}
+.sp-item{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 18px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.sp-item:hover{background:var(--border-soft);}
+.sp-item.active{background:var(--blue-light);}
+.sp-item.active::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--blue);border-radius:0 3px 3px 0;
+}
+.sp-dot{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;border:2px solid transparent;
+  transition:all .3s;
+}
+.sp-dot.done{background:var(--blue);color:#fff;border-color:var(--blue);}
+.sp-dot.active{background:var(--navy);color:#fff;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,156,222,.15);}
+.sp-dot.todo{background:var(--border-soft);color:var(--text-muted);border-color:var(--border);}
+.sp-label{font-size:11.5px;font-weight:500;color:var(--text-mid);transition:color .2s;}
+.sp-item.active .sp-label{color:var(--navy);font-weight:700;}
+.sp-item.done-item .sp-label{color:var(--blue);}
+.sp-line{
+  width:2px;height:14px;background:var(--border-soft);
+  margin-left:28px;transition:background .3s;
+}
+.sp-line.done{background:var(--blue);}
+.sidebar-footer{
+  margin-top:10px;padding:12px 18px 0;
+  border-top:1px solid var(--border-soft);
+  font-size:10px;color:var(--text-muted);line-height:1.5;
+}
+.sidebar-footer strong{color:var(--navy);display:block;margin-bottom:2px;}
+.content-wrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
+
+.main{max-width:1200px;margin:0 auto;padding:24px 32px 40px;display:flex;flex-direction:row;gap:24px;align-items:flex-start;}
 
 /* ── CARDS ────────────────────────────────────── */
 .card{
@@ -481,57 +511,65 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   </div>
 </div>
 
-<!-- ══ PROGRESS ══════════════════════════════════════════════ -->
-<div class="progress-wrap">
-  <div class="steps">
-    <div class="step-item active">
-      <div class="step-dot done" id="sd1">
-        <svg viewBox="0 0 10 8" fill="none" width="10"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <div class="step-label">Solicitante</div>
-    </div>
-    <div class="step-connector done" id="sl1"></div>
-    <div class="step-item">
-      <div class="step-dot done" id="sd2">
-        <svg viewBox="0 0 10 8" fill="none" width="10"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <div class="step-label">Colaborador</div>
-    </div>
-    <div class="step-connector done" id="sl2"></div>
-    <div class="step-item">
-      <div class="step-dot done" id="sd3">
-        <svg viewBox="0 0 10 8" fill="none" width="10"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <div class="step-label">Referência</div>
-    </div>
-    <div class="step-connector" id="sl3"></div>
-    <div class="step-item">
-      <div class="step-dot active" id="sd4">4</div>
-      <div class="step-label">Despesas</div>
-    </div>
-    <div class="step-connector" id="sl4"></div>
-    <div class="step-item">
-      <div class="step-dot todo" id="sd5">5</div>
-      <div class="step-label">Bancário</div>
-    </div>
-    <div class="step-connector" id="sl5"></div>
-    <div class="step-item">
-      <div class="step-dot todo" id="sd6">6</div>
-      <div class="step-label">Anexos</div>
-    </div>
-    <div class="step-connector" id="sl6"></div>
-    <div class="step-item">
-      <div class="step-dot todo" id="sd7">7</div>
-      <div class="step-label">Enviar</div>
-    </div>
-  </div>
-</div>
-
 <!-- ══ MAIN ══════════════════════════════════════════════════ -->
+
 <div class="main">
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar-progress" id="sidebar">
+    <div class="sidebar-title">Progresso</div>
+
+    <div class="sp-item active" id="spi1" onclick="irParaPasso(0)" title="Ir para Solicitante">
+      <div class="sp-dot active" id="spd1">1</div>
+      <div class="sp-label">Solicitante</div>
+    </div>
+    <div class="sp-line" id="spl1"></div>
+
+    <div class="sp-item" id="spi2" onclick="irParaPasso(1)" title="Ir para Colaborador">
+      <div class="sp-dot todo" id="spd2">2</div>
+      <div class="sp-label">Colaborador</div>
+    </div>
+    <div class="sp-line" id="spl2"></div>
+
+    <div class="sp-item" id="spi3" onclick="irParaPasso(2)" title="Ir para Referência">
+      <div class="sp-dot todo" id="spd3">3</div>
+      <div class="sp-label">Referência</div>
+    </div>
+    <div class="sp-line" id="spl3"></div>
+
+    <div class="sp-item" id="spi4" onclick="irParaPasso(3)" title="Ir para Despesas">
+      <div class="sp-dot todo" id="spd4">4</div>
+      <div class="sp-label">Despesas</div>
+    </div>
+    <div class="sp-line" id="spl4"></div>
+
+    <div class="sp-item" id="spi5" onclick="irParaPasso(4)" title="Ir para Dados Bancários">
+      <div class="sp-dot todo" id="spd5">5</div>
+      <div class="sp-label">Dados Bancários</div>
+    </div>
+    <div class="sp-line" id="spl5"></div>
+
+    <div class="sp-item" id="spi6" onclick="irParaPasso(5)" title="Ir para Anexos">
+      <div class="sp-dot todo" id="spd6">6</div>
+      <div class="sp-label">Anexos</div>
+    </div>
+    <div class="sp-line" id="spl6"></div>
+
+    <div class="sp-item" id="spi7" onclick="irParaPasso(6)" title="Ir para Enviar">
+      <div class="sp-dot todo" id="spd7">7</div>
+      <div class="sp-label">Enviar</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <strong id="sb-step-label">Dados do Solicitante</strong>
+      <span id="sb-step-sub">Passo 1 de 7</span>
+    </div>
+  </aside>
+
+  <!-- ── CONTEÚDO ── -->
+  <div class="content-wrap">
 
   <!-- SEC 1: SOLICITANTE -->
-  <div class="card active-card">
+  <div class="card active-card" data-step="1">
     <div class="card-header">
       <div class="sec-badge accent-teal">1</div>
       <div class="card-title">Dados do Solicitante</div>
@@ -558,7 +596,7 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   </div>
 
   <!-- SEC 2: COLABORADOR -->
-  <div class="card">
+  <div class="card" data-step="2">
     <div class="card-header">
       <div class="sec-badge accent-blue">2</div>
       <div class="card-title">Dados do Colaborador</div>
@@ -595,7 +633,7 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   </div>
 
   <!-- SEC 3: REFERÊNCIA -->
-  <div class="card">
+  <div class="card" data-step="3">
     <div class="card-header">
       <div class="sec-badge accent-purple">3</div>
       <div class="card-title">Referência do Processo</div>
@@ -647,7 +685,7 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   </div>
 
   <!-- SEC 4: DESPESAS -->
-  <div class="card">
+  <div class="card" data-step="4">
     <div class="card-header">
       <div class="sec-badge accent-amber">4</div>
       <div class="card-title">Detalhamento das Despesas</div>
@@ -687,7 +725,7 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   </div>
 
   <!-- SEC 5: BANCÁRIO -->
-  <div class="card">
+  <div class="card" data-step="5">
     <div class="card-header">
       <div class="sec-badge accent-navy">5</div>
       <div class="card-title">Dados Bancários</div>
@@ -728,7 +766,7 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   </div>
 
   <!-- SEC 6: ANEXOS -->
-  <div class="card">
+  <div class="card" data-step="6">
     <div class="card-header">
       <div class="sec-badge accent-blue2">6</div>
       <div class="card-title">Notas Fiscais</div>
@@ -762,7 +800,7 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   </div>
 
   <!-- BOTTOM BAR -->
-  <div class="bottom-bar">
+  <div class="bottom-bar" data-step="7">
     <button class="btn btn-secondary" onclick="limparFormulario()">
       <svg viewBox="0 0 14 14" fill="none" width="14"><path d="M2 7h10M7 2L2 7l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Limpar
@@ -774,6 +812,7 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
     </button>
   </div>
 
+  </div><!-- /content-wrap -->
 </div><!-- /main -->
 
 <!-- ══ MODAL ══════════════════════════════════════════════════ -->
@@ -825,6 +864,119 @@ function gerarID() {
   document.getElementById("idProcessoCampo").textContent = idProcesso;
 }
 gerarID();
+
+// ── SIDEBAR PROGRESSO DINÂMICO ───────────────────────────────
+var SVG_CHECK = '<svg viewBox="0 0 10 8" fill="none" width="10"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var STEP_LABELS = ['Dados do Solicitante', 'Dados do Colaborador', 'Referência do Processo', 'Despesas', 'Dados Bancários', 'Notas Fiscais', 'Enviar'];
+var secaoAtual = 1;
+
+function atualizarSidebar(n) {
+  if (n === secaoAtual) return;
+  secaoAtual = n;
+  for (var i = 1; i <= 7; i++) {
+    var dot  = document.getElementById('spd' + i);
+    var item = document.getElementById('spi' + i);
+    var line = document.getElementById('spl' + i);
+    if (!dot) continue;
+    if (i < n) {
+      dot.className  = 'sp-dot done';
+      dot.innerHTML  = SVG_CHECK;
+      item.className = 'sp-item done-item';
+      if (line) line.className = 'sp-line done';
+    } else if (i === n) {
+      dot.className  = 'sp-dot active';
+      dot.innerHTML  = String(i);
+      item.className = 'sp-item active';
+      if (line) line.className = 'sp-line';
+    } else {
+      dot.className  = 'sp-dot todo';
+      dot.innerHTML  = String(i);
+      item.className = 'sp-item';
+      if (line) line.className = 'sp-line';
+    }
+  }
+  var lbl = document.getElementById('sb-step-label');
+  var sub = document.getElementById('sb-step-sub');
+  if (lbl) lbl.textContent = STEP_LABELS[n - 1];
+  if (sub) sub.textContent = 'Passo ' + n + ' de 7';
+}
+
+
+// Clique na sidebar → rola até o card correspondente
+function irParaPasso(idx) {
+  var targets = Array.from(document.querySelectorAll('.card, .bottom-bar'));
+  var target = targets[idx];
+  if (!target) return;
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Foca no primeiro input do card para ativar o passo visualmente
+  setTimeout(function() {
+    var input = target.querySelector('input, select, textarea, button');
+    if (input) input.focus();
+  }, 400);
+}
+
+// Ao focar em qualquer campo → detecta o card pai
+document.addEventListener('focusin', function(e) {
+  var card = e.target.closest('.card, .bottom-bar');
+  if (!card) return;
+  // Pega step pelo data-step do card ou do card-title interno
+  var step = parseInt(card.getAttribute('data-step'));
+  if (step) atualizarSidebar(step);
+});
+
+// Mouse no botão enviar → passo 7
+var btnEnviar = document.getElementById('btnEnviar');
+if (btnEnviar) {
+  btnEnviar.addEventListener('mouseenter', function() { atualizarSidebar(7); });
+}
+
+// IntersectionObserver para scroll
+function initSidebarObserver() {
+  // Observa todos os cards e o bottom-bar
+  var targets = document.querySelectorAll('.card, .bottom-bar');
+  var observer = new IntersectionObserver(function(entries) {
+    var best = null, bestRatio = 0;
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
+        bestRatio = entry.intersectionRatio;
+        best = entry.target;
+      }
+    });
+    if (best) {
+      var step = parseInt(best.getAttribute('data-step'));
+      if (step) atualizarSidebar(step);
+    }
+  }, { threshold: [0.1, 0.3, 0.5], rootMargin: '0px 0px -20% 0px' });
+  targets.forEach(function(t) { observer.observe(t); });
+}
+window.addEventListener('load', initSidebarObserver);
+
+// Tudo verde ao enviar
+function marcarConcluido() {
+  for (var i = 1; i <= 7; i++) {
+    var dot  = document.getElementById('spd' + i);
+    var item = document.getElementById('spi' + i);
+    var line = document.getElementById('spl' + i);
+    if (dot)  { dot.className = 'sp-dot done'; dot.innerHTML = SVG_CHECK; }
+    if (item) item.className = 'sp-item done-item';
+    if (line) line.className = 'sp-line done';
+  }
+  var lbl = document.getElementById('sb-step-label');
+  var sub = document.getElementById('sb-step-sub');
+  if (lbl) lbl.textContent = 'Concluído!';
+  if (sub) sub.textContent = 'Todos os passos ok';
+}
+
+// Reset ao limpar
+function resetSidebar() {
+  secaoAtual = 2;
+  atualizarSidebar(1);
+  var lbl = document.getElementById('sb-step-label');
+  var sub = document.getElementById('sb-step-sub');
+  if (lbl) lbl.textContent = STEP_LABELS[0];
+  if (sub) sub.textContent = 'Passo 1 de 7';
+}
+
 
 // ── DESPESAS ─────────────────────────────────────────────────
 var despCount = 0;
@@ -1077,6 +1229,7 @@ function limparFormulario() {
   calcTotal();
   addDespesa();
   gerarID();
+  resetSidebar();
   var btn = document.getElementById("btnEnviar");
   btn.disabled = false;
   btn.innerHTML = 'Enviar Solicitação <svg viewBox="0 0 14 14" fill="none" width="14"><path d="M2 7h10M7 2l5 5-5 5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
