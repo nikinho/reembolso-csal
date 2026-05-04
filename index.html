@@ -1332,6 +1332,12 @@ function positionDomain() {
 }
 
 emailEl.addEventListener("input", function() {
+  // Remove @odebrecht.com se o autocomplete preencheu o email completo
+  var v = this.value;
+  if (v.indexOf("@") !== -1) {
+    v = v.split("@")[0];
+    this.value = v;
+  }
   this.value = this.value.replace(/[^a-zA-Z0-9._-]/g, "").toLowerCase();
   positionDomain();
 });
