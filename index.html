@@ -326,6 +326,22 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
 }
 .modal-aviso strong{color:#5C4200;}
 
+
+/* ── BOTÃO PULSAR ─────────────────────────────────────────── */
+@keyframes pulsar {
+  0%   { box-shadow: 0 0 0 0 rgba(0,156,222,.6); transform: scale(1); }
+  50%  { box-shadow: 0 0 0 12px rgba(0,156,222,0); transform: scale(1.03); }
+  100% { box-shadow: 0 0 0 0 rgba(0,156,222,0); transform: scale(1); }
+}
+.btn-pulsar {
+  animation: pulsar 1.8s ease-in-out infinite;
+  background: #009CDE !important;
+}
+.btn-pulsar:hover {
+  animation: none;
+  background: #007BB5 !important;
+  transform: scale(1.03);
+}
 /* ── BOTTOM BAR ──────────────────────────────────── */
 .bottom-bar{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -548,14 +564,8 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
     </div>
     <div class="sp-line" id="spl5"></div>
 
-    <div class="sp-item" id="spi6" onclick="irParaPasso(5)" title="Ir para Anexos">
+    <div class="sp-item" id="spi6" onclick="irParaPasso(5)" title="Ir para Enviar">
       <div class="sp-dot todo" id="spd6">6</div>
-      <div class="sp-label">Anexos</div>
-    </div>
-    <div class="sp-line" id="spl6"></div>
-
-    <div class="sp-item" id="spi7" onclick="irParaPasso(6)" title="Ir para Enviar">
-      <div class="sp-dot todo" id="spd7">7</div>
       <div class="sp-label">Enviar</div>
     </div>
 
@@ -766,54 +776,8 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
   </div>
 
   <!-- SEC 6: ANEXOS -->
-  <div class="card" data-step="6">
-    <div class="card-header">
-      <div class="sec-badge accent-blue2">6</div>
-      <div class="card-title">Notas Fiscais</div>
-      <div class="card-subtitle">arraste ou selecione os PDFs</div>
-    </div>
-    <div class="card-body">
-      <div class="upload-zone" id="uploadZone"
-        onclick="document.getElementById('fileInput').click()"
-        ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFiles(event)">
-        <input type="file" id="fileInput" multiple accept=".pdf,application/pdf" onchange="handleFiles(this.files)">
-        <div class="upload-icon">
-          <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-            <path d="M12 16V8M8 12l4-4 4 4" stroke="#009CDE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M5 20h14" stroke="#009CDE" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="upload-title">Clique para selecionar ou arraste os arquivos</div>
-        <div class="upload-sub">Somente PDF · máximo 10 arquivos · 4 MB cada</div>
-      </div>
-      <div class="file-chips" id="fileChips"></div>
-      <div class="nf-aviso">
-        <div class="nf-aviso-header">
-          <svg viewBox="0 0 20 20" fill="none" width="16" height="16" style="flex-shrink:0;margin-top:1px;">
-            <path d="M9 7h2v2H9V7zm0 4h2v4H9v-4zm1-9C5.03 2 2 5.03 2 9s3.03 7 8 7 8-3.03 8-7-3.03-7-8-7z" fill="#DC2626"/>
-          </svg>
-          <strong class="nf-aviso-atencao">ATENÇÃO</strong>
-        </div>
-        Apenas arquivos em formato <strong>PDF</strong> são aceitos. Certifique-se de que cada nota fiscal esteja <strong>legível</strong> e dentro do <strong>prazo de reembolso</strong>.
-      </div>
-    </div>
-  </div>
-
-  <!-- BOTTOM BAR -->
-  <div class="bottom-bar" data-step="7">
-    <button class="btn btn-secondary" onclick="limparFormulario()">
-      <svg viewBox="0 0 14 14" fill="none" width="14"><path d="M2 7h10M7 2L2 7l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Limpar
-    </button>
-    <div class="req-note">Campos com <span style="color:var(--red);font-weight:700;">*</span> são obrigatórios</div>
-    <button class="btn btn-primary" id="btnEnviar" onclick="enviarFormulario()">
-      Enviar Solicitação
-      <svg viewBox="0 0 14 14" fill="none" width="14"><path d="M2 7h10M7 2l5 5-5 5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-  </div>
-
-
-  <!-- ── RODAPÉ LGPD ── -->
+  
+    <!-- ── RODAPÉ LGPD ── -->
   <div style="
     margin-top:12px;
     padding:12px 20px;
@@ -834,6 +798,19 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
     </div>
   </div>
 
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar" data-step="7">
+    <button class="btn btn-secondary" onclick="limparFormulario()">
+      <svg viewBox="0 0 14 14" fill="none" width="14"><path d="M2 7h10M7 2L2 7l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Limpar
+    </button>
+    <div class="req-note">Campos com <span style="color:var(--red);font-weight:700;">*</span> são obrigatórios</div>
+    <button class="btn btn-primary" id="btnEnviar" onclick="enviarFormulario()">
+      Gerar Arquivo
+      <svg viewBox="0 0 14 14" fill="none" width="14"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
   </div><!-- /content-wrap -->
 </div><!-- /main -->
 
@@ -845,18 +822,57 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16v.92z" stroke="#009CDE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <h3>Confirmar envio?</h3>
-    <p id="modalResumo" style="margin-bottom:12px;">Os dados serão enviados ao financeiro via e-mail automático.</p>
+    <h3>Gerar arquivo de dados?</h3>
+    <p id="modalResumo" style="margin-bottom:12px;">Os dados serão exportados para um arquivo JSON. Em seguida, acesse o Forms para enviar o arquivo junto com as notas fiscais.</p>
     <div class="modal-aviso">
       <svg viewBox="0 0 20 20" fill="none" width="14" height="14" style="flex-shrink:0;margin-top:1px;">
         <circle cx="10" cy="10" r="8" stroke="#BA7517" stroke-width="1.5"/>
         <path d="M10 6v5M10 13v1" stroke="#BA7517" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      As notas fiscais anexadas serão analisadas pelo setor financeiro. Você receberá um e-mail de confirmação ou recusa após a análise.
+      Após gerar o arquivo, você será direcionado ao próximo passo para concluir o envio.
     </div>
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="confirmarEnvio()">Confirmar envio</button>
+      <button class="btn btn-primary" onclick="confirmarEnvio()">Gerar e Baixar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL SUCESSO ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalSucesso">
+  <div class="modal" style="max-width:460px;text-align:center;">
+    <div style="width:64px;height:64px;border-radius:50%;background:#E6F4EA;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <svg viewBox="0 0 28 28" fill="none" width="32" height="32">
+        <circle cx="14" cy="14" r="13" stroke="#00843D" stroke-width="1.5"/>
+        <path d="M8 14l4 4 8-8" stroke="#00843D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h3 style="color:#00843D;margin-bottom:8px;">Arquivo gerado com sucesso!</h3>
+    <div style="font-family:'Courier New',monospace;font-size:12px;background:#F0F4F7;border:0.5px solid #D1D9E0;border-radius:6px;padding:8px 16px;margin-bottom:16px;color:#1E3A4F;" id="modalProtocolo">
+      Protocolo: —
+    </div>
+    <p style="font-size:13px;color:#4B5B68;line-height:1.7;margin-bottom:20px;">
+      O arquivo <strong id="modalNomeArquivo"></strong> com todos os seus dados foi salvo no seu computador.<br><br>
+      Agora acesse o Forms e anexe os seguintes documentos:<br><br><strong>1.</strong> Este arquivo de dados (salvo no seu computador)<br><strong>2.</strong> As notas fiscais em <strong>PDF</strong><br><strong>3.</strong> O PDF da <strong>MP — Movimentação de Pessoal</strong> recebido por e-mail<br><br>Após anexar os três documentos, clique em enviar para concluir a solicitação.
+    </p>
+    <a id="btnIrForms" href="#" target="_blank" class="btn-pulsar"
+      style="display:inline-flex;align-items:center;gap:8px;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;margin-bottom:12px;transition:all .2s;">
+      <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
+        <path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M10 2h4v4M14 2L8 8" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Abrir o Forms agora
+    </a>
+    <br>
+    <button onclick="fecharModalSucesso()" style="background:none;border:none;color:#8A9BAA;font-size:12px;cursor:pointer;text-decoration:underline;margin-top:4px;">
+      Fechar e voltar ao formulário
+    </button>
+    <div style="margin-top:20px;padding:12px 16px;background:#F8FAFC;border-radius:8px;border:0.5px solid #E2EAF0;font-size:12px;color:#4B5B68;line-height:1.7;text-align:left;">
+      <svg viewBox="0 0 16 16" fill="none" width="13" height="13" style="vertical-align:middle;margin-right:5px;flex-shrink:0;">
+        <circle cx="8" cy="8" r="7" stroke="#009CDE" stroke-width="1.2"/>
+        <path d="M8 7v4M8 5v.5" stroke="#009CDE" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Após o envio no Forms, os documentos serão analisados pelo setor financeiro. Você receberá um e-mail de <strong style="color:#00843D;">confirmação</strong> ou <strong style="color:#DC2626;">recusa</strong> no endereço cadastrado.
     </div>
   </div>
 </div>
@@ -869,14 +885,10 @@ select.field-input{cursor:pointer;appearance:none;background-image:url("data:ima
 
 <script>
 // ================================================================
-// CONFIGURAÇÃO — COLE AQUI A URL DO WEBHOOK DO POWER AUTOMATE
-// Instrução: substitua o valor de _w pelo resultado de:
-//   btoa("SUA_URL_COMPLETA_DO_POWER_AUTOMATE")
-// Exemplo no console do navegador:
-//   btoa("https://prod-xx.logic.azure.com/...")
+// CONFIGURAÇÃO — COLE AQUI O LINK DO MICROSOFT FORMS
+// Substitua COLE_AQUI_O_LINK_DO_FORMS pela URL do seu formulário
 // ================================================================
-var _w = "aHR0cHM6Ly9kZWZhdWx0NmU3OTQwZTQzMmExNGM3ZmI5YmQ0MGI1YjgxMGJjLjEyLmVudmlyb25tZW50LmFwaS5wb3dlcnBsYXRmb3JtLmNvbS9wb3dlcmF1dG9tYXRlL2F1dG9tYXRpb25zL2RpcmVjdC93b3JrZmxvd3MvNDJhZjA5ZDc5MjdkNGJiNDgzMjIxNjIzYzFkODMwM2MvdHJpZ2dlcnMvbWFudWFsL3BhdGhzL2ludm9rZT9hcGktdmVyc2lvbj0x";
-var WEBHOOK_URL = (function(){ try{ return atob(_w); } catch(e){ return ""; } })();
+var FORMS_URL = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=5EB5bqEyf0y5vUC1uBC8Em6jCfd58O1KiHgkHMDcjcBUNzNLVUFJOVRSU1A5UzFQTllYTEJVRVRYTC4u";
 // ================================================================
 
 // ── ID DO PROCESSO ────────────────────────────────────────────
@@ -894,13 +906,13 @@ gerarID();
 
 // ── SIDEBAR PROGRESSO DINÂMICO ───────────────────────────────
 var SVG_CHECK = '<svg viewBox="0 0 10 8" fill="none" width="10"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-var STEP_LABELS = ['Dados do Solicitante', 'Dados do Colaborador', 'Referência do Processo', 'Despesas', 'Dados Bancários', 'Notas Fiscais', 'Enviar'];
+var STEP_LABELS = ['Dados do Solicitante','Dados do Colaborador','Referência do Processo','Despesas','Dados Bancários','Enviar'];
 var secaoAtual = 1;
 
 function atualizarSidebar(n) {
   if (n === secaoAtual) return;
   secaoAtual = n;
-  for (var i = 1; i <= 7; i++) {
+  for (var i = 1; i <= 6; i++) {
     var dot  = document.getElementById('spd' + i);
     var item = document.getElementById('spi' + i);
     var line = document.getElementById('spl' + i);
@@ -925,13 +937,13 @@ function atualizarSidebar(n) {
   var lbl = document.getElementById('sb-step-label');
   var sub = document.getElementById('sb-step-sub');
   if (lbl) lbl.textContent = STEP_LABELS[n - 1];
-  if (sub) sub.textContent = 'Passo ' + n + ' de 7';
+  if (sub) sub.textContent = 'Passo ' + n + ' de 6';
 }
 
 
 // Clique na sidebar → rola até o card correspondente
 function irParaPasso(idx) {
-  var targets = Array.from(document.querySelectorAll('.card, .bottom-bar'));
+  var targets = Array.from(document.querySelectorAll('.card[data-step], .bottom-bar'));
   var target = targets[idx];
   if (!target) return;
   target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -980,7 +992,7 @@ window.addEventListener('load', initSidebarObserver);
 
 // Tudo verde ao enviar
 function marcarConcluido() {
-  for (var i = 1; i <= 7; i++) {
+  for (var i = 1; i <= 6; i++) {
     var dot  = document.getElementById('spd' + i);
     var item = document.getElementById('spi' + i);
     var line = document.getElementById('spl' + i);
@@ -1097,44 +1109,6 @@ document.getElementById("c_cpf").addEventListener("input", function() {
   this.value = v;
 });
 
-// ── UPLOAD PDF ───────────────────────────────────────────────
-var uploadedFiles = [];
-function lerBase64(file) {
-  return new Promise(function(resolve, reject) {
-    var reader = new FileReader();
-    reader.onload = function(e) { resolve(e.target.result.split(",")[1]); };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-function handleFiles(files) {
-  Array.from(files).forEach(function(f) {
-    if (uploadedFiles.length >= 10) { showToast("Máximo de 10 arquivos permitido", "error"); return; }
-    if (!f.name.toLowerCase().endsWith(".pdf") && f.type !== "application/pdf") { showToast("Apenas PDF: " + f.name, "error"); return; }
-    if (f.size > 4 * 1024 * 1024) { showToast("Arquivo excede 4 MB: " + f.name, "error"); return; }
-    lerBase64(f).then(function(b64) {
-      uploadedFiles.push({ name: f.name, base64: b64 });
-      renderChips();
-    }).catch(function() { showToast("Erro ao ler: " + f.name, "error"); });
-  });
-}
-function renderChips() {
-  var c = document.getElementById("fileChips");
-  c.innerHTML = "";
-  uploadedFiles.forEach(function(f,i) {
-    var chip = document.createElement("div");
-    chip.className = "file-chip";
-    chip.innerHTML =
-      "<svg viewBox='0 0 12 14' fill='none' width='11' height='13'><rect x='1' y='1' width='10' height='12' rx='2' stroke='#009CDE' stroke-width='1.2'/><path d='M3.5 5h5M3.5 7.5h5M3.5 10h3' stroke='#009CDE' stroke-width='1' stroke-linecap='round'/></svg>" +
-      "<span style='max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+f.name+"</span>" +
-      "<span class='file-chip-rm' onclick='removeFile("+i+")' title='Remover'>×</span>";
-    c.appendChild(chip);
-  });
-}
-function removeFile(i) { uploadedFiles.splice(i,1); renderChips(); }
-function dragOver(e) { e.preventDefault(); document.getElementById("uploadZone").classList.add("dragover"); }
-function dragLeave(e) { document.getElementById("uploadZone").classList.remove("dragover"); }
-function dropFiles(e) { e.preventDefault(); dragLeave(); handleFiles(e.dataTransfer.files); }
 
 // ── VALIDAÇÃO ────────────────────────────────────────────────
 function validar() {
@@ -1171,10 +1145,6 @@ function validar() {
 // ── ENVIO ────────────────────────────────────────────────────
 function enviarFormulario() {
   if (!validar()) return;
-  if (uploadedFiles.length === 0) {
-    showToast("Anexe ao menos uma nota fiscal em PDF antes de enviar", "error");
-    return;
-  }
   var resumo = "Reembolso de <strong>"+document.getElementById("c_nome").value+"</strong> referente a "+document.getElementById("r_mes").value+"/"+document.getElementById("r_ano").value+". Total: "+document.getElementById("totalValor").textContent;
   document.getElementById("modalResumo").innerHTML = resumo;
   document.getElementById("modalConfirm").classList.add("show");
@@ -1182,12 +1152,13 @@ function enviarFormulario() {
 function fecharModal() { document.getElementById("modalConfirm").classList.remove("show"); }
 
 // ── CONFIRMAR ENVIO ──────────────────────────────────────────
-async function confirmarEnvio() {
+function confirmarEnvio() {
   fecharModal();
   var btn = document.getElementById("btnEnviar");
   btn.disabled = true;
-  btn.innerHTML = "<span class='spinner'></span> Enviando...";
+  btn.innerHTML = "<span class='spinner'></span>Gerando...";
 
+  // Monta array de despesas
   var despesas = [];
   var rows = document.getElementById("despTbody").querySelectorAll("tr");
   rows.forEach(function(tr) {
@@ -1196,47 +1167,58 @@ async function confirmarEnvio() {
     var data = document.getElementById("d_data"+id);
     var val  = document.getElementById("d_val"+id);
     if (desc && desc.value.trim()) {
-      despesas.push({ numero:id, descricao:desc.value.trim(), data:data?data.value:"", valor:val?val.value:"0" });
+      despesas.push({
+        numero: id,
+        descricao: desc.value.trim(),
+        data: data ? data.value : "",
+        valor: val ? val.value : "0"
+      });
     }
   });
 
+  // Monta payload JSON com todos os dados
   var payload = {
-    id_processo: idProcesso,
-    s_nome:      document.getElementById("s_nome").value.trim(),
-    s_email:     document.getElementById("s_email").value.trim(),
-    c_nome:      document.getElementById("c_nome").value.trim(),
-    c_cargo:     document.getElementById("c_cargo").value.trim(),
-    c_matricula: document.getElementById("c_matricula").value.trim(),
-    c_cpf:       document.getElementById("c_cpf").value.trim(),
-    c_cc:        document.getElementById("c_cc").value.trim(),
-    r_tipo:      document.getElementById("r_tipo").value,
-    r_mes:       document.getElementById("r_mes").value,
-    r_ano:       document.getElementById("r_ano").value,
-    r_status:    document.getElementById("r_status").value,
-    b_banco:     document.getElementById("b_banco").value.trim(),
-    b_tipo:      document.getElementById("b_tipo").value,
-    b_agencia:   document.getElementById("b_agencia").value.trim(),
-    b_conta:     document.getElementById("b_conta").value.trim(),
-    b_pix:       document.getElementById("b_pix").value.trim(),
-    total:       String(calcTotal().toFixed(2)),
-    despesas:    despesas,
-    nf_arquivos: uploadedFiles
+    id_processo:  idProcesso,
+    s_nome:       document.getElementById("s_nome").value.trim(),
+    s_email:      document.getElementById("s_email").value.trim(),
+    c_nome:       document.getElementById("c_nome").value.trim(),
+    c_cargo:      document.getElementById("c_cargo").value.trim(),
+    c_matricula:  document.getElementById("c_matricula").value.trim(),
+    c_cpf:        document.getElementById("c_cpf").value.trim(),
+    c_cc:         document.getElementById("c_cc").value.trim(),
+    r_tipo:       document.getElementById("r_tipo").value,
+    r_mes:        document.getElementById("r_mes").value,
+    r_ano:        document.getElementById("r_ano").value,
+    r_status:     document.getElementById("r_status").value,
+    b_banco:      document.getElementById("b_banco").value.trim(),
+    b_tipo:       document.getElementById("b_tipo").value,
+    b_agencia:    document.getElementById("b_agencia").value.trim(),
+    b_conta:      document.getElementById("b_conta").value.trim(),
+    b_pix:        document.getElementById("b_pix").value.trim(),
+    total:        String(calcTotal().toFixed(2)),
+    despesas:     despesas
   };
 
-  try {
-    var resp = await fetch(WEBHOOK_URL, {
-      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
-    });
-    if (resp.ok || resp.status === 202) {
-      showToast("Solicitação enviada com sucesso! Protocolo: " + idProcesso, "success");
-      btn.innerHTML = "✓ Enviado";
-      btn.style.background = "var(--green)";
-    } else { throw new Error("Status " + resp.status); }
-  } catch(e) {
-    showToast("Enviado! Verifique o e-mail de confirmação. Protocolo: " + idProcesso, "success");
-    btn.innerHTML = "✓ Enviado";
-    btn.style.background = "var(--green)";
-  }
+  // Gera e faz download do arquivo JSON
+  var json = JSON.stringify(payload, null, 2);
+  var blob = new Blob([json], { type: "application/json" });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement("a");
+  a.href     = url;
+  a.download = idProcesso + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // Feedback visual e link para o Forms
+  btn.innerHTML = "Arquivo gerado ✓";
+  btn.style.background = "#00843D";
+
+  showToastComLink(
+    "Arquivo gerado! Agora acesse o Forms para enviar os documentos. Protocolo: " + idProcesso,
+    FORMS_URL
+  );
 }
 
 // ── LIMPAR ───────────────────────────────────────────────────
@@ -1250,8 +1232,6 @@ function limparFormulario() {
   document.getElementById("r_status").value = "Aguardando aprovação MP"; updateStatusDot();
   document.getElementById("despTbody").innerHTML = "";
   despCount = 0;
-  uploadedFiles = [];
-  renderChips();
   calcTotal();
   addDespesa();
   gerarID();
@@ -1263,6 +1243,17 @@ function limparFormulario() {
 }
 
 // ── TOAST ────────────────────────────────────────────────────
+function showToastComLink(msg, formsUrl) {
+  document.getElementById("modalProtocolo").textContent = "Protocolo: " + idProcesso;
+  document.getElementById("modalNomeArquivo").textContent = idProcesso + ".json";
+  document.getElementById("btnIrForms").href = formsUrl;
+  document.getElementById("modalSucesso").classList.add("show");
+}
+
+function fecharModalSucesso() {
+  document.getElementById("modalSucesso").classList.remove("show");
+}
+
 function showToast(msg, tipo) {
   var t = document.getElementById("toast");
   var m = document.getElementById("toastMsg");
