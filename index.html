@@ -1205,7 +1205,7 @@ function confirmarEnvio() {
   var url  = URL.createObjectURL(blob);
   var a    = document.createElement("a");
   a.href     = url;
-  a.download = idProcesso + ".json";
+  a.download = idProcesso + ".txt";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1245,7 +1245,7 @@ function limparFormulario() {
 // ── TOAST ────────────────────────────────────────────────────
 function showToastComLink(msg, formsUrl) {
   document.getElementById("modalProtocolo").textContent = "Protocolo: " + idProcesso;
-  document.getElementById("modalNomeArquivo").textContent = idProcesso + ".json";
+  document.getElementById("modalNomeArquivo").textContent = idProcesso + ".txt";
   document.getElementById("btnIrForms").href = formsUrl;
   document.getElementById("modalSucesso").classList.add("show");
 }
